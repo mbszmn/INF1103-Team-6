@@ -1,3 +1,7 @@
+import json
+from datetime import datetime
+from pathlib import Path
+
 class IOManager:
     VALID_USER_PRIORITIES = {"Low", "Medium", "High", "Critical"}
 
@@ -63,3 +67,26 @@ class IOManager:
                     )
             
         return errors
+
+    def __init__(self, file_path: str = "data/tickets.json"):
+            self.file_path = Path(file_path)
+            self.file_path.parent.mkdir(parents=True, exist_ok=True)
+
+            if not self.file_path.exists():
+                self._write_all([])
+
+    def _read_all(self) ->list[dict]:
+        try:
+            with self.file_path.open("r", encoding="utf-8") as file:
+                data = json.load(file)
+            if not isinstance(data, list):
+                raise ValueError("ERROR.")
+
+            return data
+
+        except (json.JSONDecodeError, ValueError):
+            raise RuntimeError("Ticket storage is corrupted. Check data/tickets.json.")
+
+    def _write_all(self, tickets: list[dict]) -> None:
+        with self.file_path.open("w", encoding="utf-8") as file:
+            json.dump(tickets, file, indent=4, ensure_ascii=False)
