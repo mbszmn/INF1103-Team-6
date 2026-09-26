@@ -2,6 +2,8 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+from models.ticket import Ticket
+
 class IOManager:
     VALID_USER_PRIORITIES = {"Low", "Medium", "High", "Critical"}
 
@@ -106,7 +108,6 @@ class IOManager:
 
         return f"{largest_number + 1:04d}"
 
-
     def create_ticket(self, user_input: dict) -> Ticket:
         return Ticket(
                 ticket_id=self.generate_ticket_id(),
@@ -118,6 +119,7 @@ class IOManager:
                 user_priority=user_input.get("user_priority", "Medium"),
                 error_message=user_input.get("error_message", ""),
             )
+    
     def save_new_ticket(self, ticket: Ticket) -> None:
         tickets = self._read_all()
         tickets.append(ticket.to_dict())
