@@ -118,3 +118,24 @@ class IOManager:
                 user_priority=user_input.get("user_priority", "Medium"),
                 error_message=user_input.get("error_message", ""),
             )
+    def save_new_ticket(self, ticket: Ticket) -> None:
+        tickets = self._read_all()
+        tickets.append(ticket.to_dict())
+        self._write_all(tickets)
+
+    def update_ticket(self, ticket: Ticket) -> None:
+        tickets = self._read_all()
+        found = False
+
+        ticket.updated_at = datetime.now().isoformat(timespec="seconds")
+
+        for index, existing_ticket in enumerate(tickets):
+            if existing_ticket.get("ticket_id") == ticket.ticket_id:
+                tickets[index] = ticket.to_dict()
+                found = True
+                break
+
+        if not found:
+            raise KeyError(f"Ticket {ticket.ticket_id} was not found.")
+
+        self._write_all(tickets)
