@@ -90,3 +90,31 @@ class IOManager:
     def _write_all(self, tickets: list[dict]) -> None:
         with self.file_path.open("w", encoding="utf-8") as file:
             json.dump(tickets, file, indent=4, ensure_ascii=False)
+
+    def generate_ticket_id(self) -> str:
+        tickets = self._read_all()
+
+        largest_number = 0
+
+        for ticket in tickets:
+            ticket_id = ticket.get("ticket_id", "")
+            try:
+                number = int(ticket_id)
+                largest_number = max(largest_number, number)
+            except(ValueError, IndexError):
+                continue
+
+        return f"{largest_number + 1:04d}"
+
+
+    def create_ticket(self, user_input: dict) -> Ticket:
+        return Ticket(
+                ticket_id=self.generate_ticket_id(),
+                username=user_input["username"],
+                device=user_input["device"],
+                title=user_input["title"],
+                description=user_input["description"],
+                steps_attempted=user_input.get("steps_attempted", ""),
+                user_priority=user_input.get("user_priority", "Medium"),
+                error_message=user_input.get("error_message", ""),
+            )
