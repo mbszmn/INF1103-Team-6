@@ -1,6 +1,13 @@
+from dotenv import load_dotenv
+
+# load the api key frm .env file
+load_dotenv()
+
+# import the managers
 from managers.io_manager import IOManager
 from managers.ai_manager import AIManager
 from managers.logic_manager import process_ticket
+
 
 def submit_ticket(io_manager: IOManager, ai_manager: AIManager):
     try: 
