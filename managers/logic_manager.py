@@ -69,3 +69,14 @@ def validate_ai_response(ai_response: dict) -> list[str]:
         errors.append("Troubleshooting must be a list.")
 
     return errors
+
+
+def apply_security_rule(ai_response: dict) -> dict:
+    """Escalate tickets identified as security-related."""
+    result = ai_response.copy()
+
+    if ai_response["security_related"] is True:
+        result["requires_escalation"] = True
+        result["action"] = "ESCALATE"
+
+    return result
