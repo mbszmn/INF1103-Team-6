@@ -80,3 +80,14 @@ def apply_security_rule(ai_response: dict) -> dict:
         result["action"] = "ESCALATE"
 
     return result
+
+
+def apply_confidence_rule(ai_response: dict) -> dict:
+    """Send low-confidence AI results for manual review."""
+    result = ai_response.copy()
+
+    if ai_response["confidence"] < 0.70:
+        result["requires_manual_review"] = True
+        result["action"] = "MANUAL_REVIEW"
+
+    return result
