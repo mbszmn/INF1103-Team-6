@@ -91,3 +91,13 @@ def apply_confidence_rule(ai_response: dict) -> dict:
         result["action"] = "MANUAL_REVIEW"
 
     return result
+
+
+def apply_priority_rule(ai_response: dict) -> dict:
+    """Place critical tickets at the top of the support queue."""
+    result = ai_response.copy()
+
+    if ai_response["priority"] == "Critical":
+        result["queue_position"] = "TOP"
+
+    return result
