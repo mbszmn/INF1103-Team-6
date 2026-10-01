@@ -101,3 +101,34 @@ def apply_priority_rule(ai_response: dict) -> dict:
         result["queue_position"] = "TOP"
 
     return result
+
+
+def fallback_classification(description: str) -> dict:
+    """Classify a ticket using keywords when the AI service is unavailable."""
+    text = description.lower()
+
+    if any(keyword in text for keyword in ["wifi", "internet", "network"]):
+        category = "Network"
+    elif any(keyword in text for keyword in ["password", "login", "account"]):
+        category = "Account"
+    elif any(keyword in text for keyword in ["laptop", "keyboard", "screen"]):
+        category = "Hardware"
+    elif any(keyword in text for keyword in ["software", "application", "program"]):
+        category = "Software"
+    elif any(keyword in text for keyword in ["virus", "phishing", "suspicious"]):
+        category = "Security"
+    else:
+        category = "Other"
+
+    return {
+        "category": category,
+        "priority": "Medium",
+        "confidence": 0.0,
+        "summary": description,
+        "affected_system": "Unknown",
+        "security_related": category == "Security",
+        "requires_escalation": category == "Security",
+        "requires_manual_review": True,
+        "troubleshooting": [],
+        "action": "MANUAL_REVIEW",
+    }
