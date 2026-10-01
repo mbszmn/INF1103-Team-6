@@ -75,7 +75,14 @@ def apply_security_rule(ai_response: dict) -> dict:
     """Escalate tickets identified as security-related."""
     result = ai_response.copy()
 
-    if ai_response["security_related"] is True:
+    if (
+        ai_response["category"] == "Security"
+        and ai_response["security_related"] is True
+    ):
+        result["requires_escalation"] = True
+        result["action"] = "ESCALATE"
+
+    elif ai_response["security_related"] is True:
         result["requires_escalation"] = True
         result["action"] = "ESCALATE"
 
@@ -88,7 +95,9 @@ def apply_confidence_rule(ai_response: dict) -> dict:
 
     if ai_response["confidence"] < 0.70:
         result["requires_manual_review"] = True
-        result["action"] = "MANUAL_REVIEW"
+
+        if result.get("action") != "ESCALATE":
+            result["action"] = "MANUAL_REVIEW"
 
     return result
 
@@ -132,3 +141,20 @@ def fallback_classification(description: str) -> dict:
         "troubleshooting": [],
         "action": "MANUAL_REVIEW",
     }
+
+
+def process_ticket(ai_response: dict) -> dict:
+    """Validate an AI response and apply all Logic Manager rules."""
+    validation_errors = validate_ai_response(ai_response)
+
+    if validation_errors:
+        return {
+            "action": "REJECT",
+            "errors": validation_errors,
+        }
+
+    result = apply_security_rule(ai_response)
+    result = apply_confidence_rule(result)
+    result = apply_priority_rule(result)
+
+    return result
