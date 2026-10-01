@@ -1,3 +1,30 @@
 [
-
+    {
+        "ticket_id": "0001",
+        "username": "Muhaini",
+        "device": "Windows",
+        "title": "Network issue",
+        "description": "unable to connect to the school wifi",
+        "steps_attempted": "tried restarting my laptop",
+        "user_priority": "Medium",
+        "error_message": "unable to connect",
+        "ai_analysis": {
+            "category": "Network",
+            "priority": "Medium",
+            "confidence": 0.0,
+            "summary": "unable to connect to the school wifi",
+            "affected_system": "Unknown",
+            "security_related": false,
+            "requires_escalation": false,
+            "requires_manual_review": true,
+            "troubleshooting": [],
+            "action": "MANUAL_REVIEW"
+        },
+        "final_priority": "Medium",
+        "status": "Open",
+        "escalated": false,
+        "requires_manual_review": true,
+        "created_at": "2026-10-02T03:11:52",
+        "updated_at": "2026-10-02T03:11:52"
+    }
 ]
