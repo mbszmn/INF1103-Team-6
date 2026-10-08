@@ -62,3 +62,13 @@ def add_ticket(tickets: list, ticket: dict) -> bool:
         return False
     tickets.append(ticket)
     return save_tickets(tickets)
+
+
+def attach_ai_result(ticket: dict, ai_result: dict) -> None:
+    # keep the ai output inside the ticket so both get saved together
+    ticket["ai_analysis"] = ai_result
+    ticket["final_priority"] = ai_result["priority"]
+    ticket["escalated"] = ai_result["requires_escalation"]
+    # logic manager only adds this one when confidence is low
+    if "requires_manual_review" in ai_result.keys():
+        ticket["requires_manual_review"] = ai_result["requires_manual_review"]
