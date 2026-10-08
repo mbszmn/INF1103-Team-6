@@ -18,17 +18,34 @@ def load_tickets() -> list:
         print(TICKET_FILE, "not found, starting with no tickets.")
         return []
 
-    with open(TICKET_FILE, "r", encoding="utf-8") as file:
-        tickets = json.load(file)
+    try:
+        with open(TICKET_FILE, "r", encoding="utf-8") as file:
+            tickets = json.load(file)
+    except ValueError:
+        tickets = None
+
+    # if the file is not a proper json list, keep a copy and start over
+    if type(tickets) != list:
+        backup = TICKET_FILE + ".bak"
+        if os.path.exists(backup):
+            os.remove(backup)
+        os.rename(TICKET_FILE, backup)
+        print(TICKET_FILE, "is damaged, moved it to", backup)
+        return []
+
     print(TICKET_FILE, "found,", len(tickets), "ticket(s) loaded.")
     return tickets
 
 
 def save_tickets(tickets: list) -> bool:
-    if not os.path.exists(DATA_FOLDER):
-        os.mkdir(DATA_FOLDER)
-    with open(TICKET_FILE, "w", encoding="utf-8") as file:
-        json.dump(tickets, file, indent=4)
+    try:
+        if not os.path.exists(DATA_FOLDER):
+            os.mkdir(DATA_FOLDER)
+        with open(TICKET_FILE, "w", encoding="utf-8") as file:
+            json.dump(tickets, file, indent=4)
+    except OSError:
+        print("Could not save to", TICKET_FILE)
+        return False
     return True
 
 
@@ -146,21 +163,25 @@ def display_all(tickets: list) -> None:
 
 def export_tickets_csv(tickets: list) -> bool:
     # csv version for staff to open in excel, text goes in quotes in case it has commas
-    with open(CSV_FILE, "w", encoding="utf-8") as file:
-        file.write("ticket_id,username,device,title,category,"
-                   + "final_priority,status,escalated,created_at\n")
-        for ticket in tickets:
-            category = ""
-            if ticket["ai_analysis"] != {}:
-                category = ticket["ai_analysis"]["category"]
-            file.write(ticket["ticket_id"] + ","
-                       + '"' + ticket["username"] + '",'
-                       + '"' + ticket["device"] + '",'
-                       + '"' + ticket["title"] + '",'
-                       + category + ","
-                       + ticket["final_priority"] + ","
-                       + ticket["status"] + ","
-                       + str(ticket["escalated"]) + ","
-                       + ticket["created_at"] + "\n")
+    try:
+        with open(CSV_FILE, "w", encoding="utf-8") as file:
+            file.write("ticket_id,username,device,title,category,"
+                       + "final_priority,status,escalated,created_at\n")
+            for ticket in tickets:
+                category = ""
+                if ticket["ai_analysis"] != {}:
+                    category = ticket["ai_analysis"]["category"]
+                file.write(ticket["ticket_id"] + ","
+                           + '"' + ticket["username"] + '",'
+                           + '"' + ticket["device"] + '",'
+                           + '"' + ticket["title"] + '",'
+                           + category + ","
+                           + ticket["final_priority"] + ","
+                           + ticket["status"] + ","
+                           + str(ticket["escalated"]) + ","
+                           + ticket["created_at"] + "\n")
+    except OSError:
+        print("Could not write", CSV_FILE + ", close it if it is open in excel.")
+        return False
     print("Tickets exported to", CSV_FILE)
     return True
