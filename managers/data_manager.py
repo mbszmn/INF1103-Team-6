@@ -114,3 +114,31 @@ def reopen_ticket(tickets: list, ticket_id: str) -> bool:
     if saved:
         print("Ticket", ticket_id, "reopened.")
     return saved
+
+
+def display_ticket(ticket: dict) -> None:
+    print(LINE)
+    print("Ticket ID:", ticket["ticket_id"])
+    print("User:", ticket["username"], "| Device:", ticket["device"])
+    print("Title:", ticket["title"])
+    print("Description:", ticket["description"])
+    print("Status:", ticket["status"], "| Priority:", ticket["final_priority"])
+    print("Escalated:", ticket["escalated"],
+          "| Manual review:", ticket["requires_manual_review"])
+    if ticket["ai_analysis"] != {}:
+        print("AI Category:", ticket["ai_analysis"]["category"])
+        print("AI Summary:", ticket["ai_analysis"]["summary"])
+    print("Created:", ticket["created_at"], "| Updated:", ticket["updated_at"])
+    print(LINE)
+
+
+def display_all(tickets: list) -> None:
+    print("\nAll Tickets")
+    print(LINE)
+    if len(tickets) == 0:
+        print("No tickets yet.")
+    for ticket in tickets:
+        print("ID: " + ticket["ticket_id"] + " | " + ticket["title"]
+              + " | Priority: " + ticket["final_priority"]
+              + " | Status: " + ticket["status"])
+    print(LINE)
