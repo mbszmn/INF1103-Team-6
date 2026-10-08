@@ -46,3 +46,19 @@ def generate_ticket_id(tickets: list) -> str:
     while len(new_id) < 4:
         new_id = "0" + new_id
     return new_id
+
+
+def find_ticket(tickets: list, ticket_id: str) -> dict | None:
+    for ticket in tickets:
+        if ticket["ticket_id"] == ticket_id:
+            return ticket
+    return None
+
+
+def add_ticket(tickets: list, ticket: dict) -> bool:
+    # ids must be unique
+    if find_ticket(tickets, ticket["ticket_id"]) != None:
+        print("Ticket ID", ticket["ticket_id"], "already exists.")
+        return False
+    tickets.append(ticket)
+    return save_tickets(tickets)
