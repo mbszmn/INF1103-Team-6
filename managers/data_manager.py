@@ -72,3 +72,45 @@ def attach_ai_result(ticket: dict, ai_result: dict) -> None:
     # logic manager only adds this one when confidence is low
     if "requires_manual_review" in ai_result.keys():
         ticket["requires_manual_review"] = ai_result["requires_manual_review"]
+
+
+def update_ticket(tickets: list, ticket_id: str, field: str, new_value: str) -> bool:
+    ticket = find_ticket(tickets, ticket_id)
+    if ticket == None:
+        print("Ticket", ticket_id, "not found.")
+        return False
+    if field == "ticket_id":
+        print("Ticket ID cannot be changed.")
+        return False
+    # closed tickets cannot be changed unless reopened
+    if ticket["status"] == "Closed":
+        print("Ticket", ticket_id, "is closed, reopen it first.")
+        return False
+
+    ticket[field] = new_value
+    ticket["updated_at"] = current_time()
+    return save_tickets(tickets)
+
+
+def close_ticket(tickets: list, ticket_id: str) -> bool:
+    closed = update_ticket(tickets, ticket_id, "status", "Closed")
+    if closed:
+        print("Ticket", ticket_id, "closed.")
+    return closed
+
+
+def reopen_ticket(tickets: list, ticket_id: str) -> bool:
+    ticket = find_ticket(tickets, ticket_id)
+    if ticket == None:
+        print("Ticket", ticket_id, "not found.")
+        return False
+    if ticket["status"] != "Closed":
+        print("Ticket", ticket_id, "is not closed.")
+        return False
+
+    ticket["status"] = "Reopened"
+    ticket["updated_at"] = current_time()
+    saved = save_tickets(tickets)
+    if saved:
+        print("Ticket", ticket_id, "reopened.")
+    return saved
