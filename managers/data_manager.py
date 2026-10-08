@@ -142,3 +142,25 @@ def display_all(tickets: list) -> None:
               + " | Priority: " + ticket["final_priority"]
               + " | Status: " + ticket["status"])
     print(LINE)
+
+
+def export_tickets_csv(tickets: list) -> bool:
+    # csv version for staff to open in excel, text goes in quotes in case it has commas
+    with open(CSV_FILE, "w", encoding="utf-8") as file:
+        file.write("ticket_id,username,device,title,category,"
+                   + "final_priority,status,escalated,created_at\n")
+        for ticket in tickets:
+            category = ""
+            if ticket["ai_analysis"] != {}:
+                category = ticket["ai_analysis"]["category"]
+            file.write(ticket["ticket_id"] + ","
+                       + '"' + ticket["username"] + '",'
+                       + '"' + ticket["device"] + '",'
+                       + '"' + ticket["title"] + '",'
+                       + category + ","
+                       + ticket["final_priority"] + ","
+                       + ticket["status"] + ","
+                       + str(ticket["escalated"]) + ","
+                       + ticket["created_at"] + "\n")
+    print("Tickets exported to", CSV_FILE)
+    return True
