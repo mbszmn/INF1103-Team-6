@@ -30,3 +30,19 @@ def save_tickets(tickets: list) -> bool:
     with open(TICKET_FILE, "w", encoding="utf-8") as file:
         json.dump(tickets, file, indent=4)
     return True
+
+
+def generate_ticket_id(tickets: list) -> str:
+    # biggest id so far + 1
+    largest = 0
+    for ticket in tickets:
+        if str(ticket["ticket_id"]).isdigit():
+            number = int(ticket["ticket_id"])
+            if number > largest:
+                largest = number
+
+    # pad to 4 digits like 0001
+    new_id = str(largest + 1)
+    while len(new_id) < 4:
+        new_id = "0" + new_id
+    return new_id
