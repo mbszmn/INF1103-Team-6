@@ -1,3 +1,5 @@
 .env
 __pycache__/
 data/tickets.csv
+data/test_tickets.json
+data/test_tickets.csv
