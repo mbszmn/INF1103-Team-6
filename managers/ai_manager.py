@@ -8,13 +8,13 @@ from managers.logic_manager import fallback_classification
 client = genai.Client()
 
 def analyse_ticket(
-    title: str, 
-    description: str, 
-    device: str = "Unknown", 
-    error_message: str = "", 
-    steps_attempted: str = "",
-    model_name: str = "gemini-3.5-flash-lite"
-) -> dict:
+    title, 
+    description, 
+    device = "Unknown", 
+    error_message = "", 
+    steps_attempted = "",
+    model_name = "gemini-3.5-flash-lite"
+):
     """
     Sends ticket inputs to Google AI Studio with strict prompt guardrails 
     and schema validation. Fully procedural function with zero domain logic.

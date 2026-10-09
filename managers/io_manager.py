@@ -1,7 +1,7 @@
 VALID_USER_PRIORITIES = {"Low", "Medium", "High", "Critical"}
 
 
-def _required_input(prompt: str) -> str:
+def _required_input(prompt):
     while True:
         value = input(prompt).strip()
         if value:
@@ -9,7 +9,7 @@ def _required_input(prompt: str) -> str:
         print("This field cannot be empty.")
 
 
-def collect_ticket_input() -> dict:
+def collect_ticket_input():
     username = _required_input("Name / Username: ")
     while True:
         student_id = input("Student ID (type staff if you are staff): ").strip()
@@ -52,7 +52,7 @@ def collect_ticket_input() -> dict:
     return data
 
 
-def validate_ticket_input(data: dict) -> list[str]:
+def validate_ticket_input(data):
     errors = []
 
     required_fields = [

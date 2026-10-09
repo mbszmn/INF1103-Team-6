@@ -11,7 +11,7 @@ from managers import data_manager
 from models.ticket import create_ticket
 
 
-def submit_ticket(tickets: list):
+def submit_ticket(tickets):
     try:
         user_input = io_manager.collect_ticket_input()
 
