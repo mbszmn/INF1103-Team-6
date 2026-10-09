@@ -4,6 +4,7 @@ from datetime import datetime
 def create_ticket(
     ticket_id: str,
     username: str,
+    student_id: str,
     device: str,
     title: str,
     description: str,
@@ -18,6 +19,7 @@ def create_ticket(
     return {
         "ticket_id": ticket_id,
         "username": username,
+        "student_id": student_id,
         "device": device,
         "title": title,
         "description": description,

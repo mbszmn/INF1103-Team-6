@@ -38,7 +38,7 @@ tickets = data_manager.load_tickets()
 check("no file gives empty list", tickets == [])
 check("first id is 0001", data_manager.generate_ticket_id(tickets) == "0001")
 
-ticket = create_ticket("0001", "tester", "Windows", "Wifi down", "cannot connect to the school wifi")
+ticket = create_ticket("0001", "tester", "2600001", "Windows", "Wifi down", "cannot connect to the school wifi")
 ai_result = process_ticket(fallback_classification("cannot connect to the school wifi"))
 data_manager.attach_ai_result(ticket, ai_result)
 check("add ticket", data_manager.add_ticket(tickets, ticket) == True)
@@ -49,7 +49,7 @@ check("manual review flag saved", saved[0]["requires_manual_review"] == True)
 
 # unique id
 check("next id is 0002", data_manager.generate_ticket_id(tickets) == "0002")
-copy = create_ticket("0001", "tester", "Mac", "Copy", "same id as the first one")
+copy = create_ticket("0001", "tester", "2600001", "Mac", "Copy", "same id as the first one")
 check("duplicate id refused", data_manager.add_ticket(tickets, copy) == False)
 check("only one ticket stored", len(tickets) == 1)
 check("id cannot be changed", data_manager.update_ticket(tickets, "0001", "ticket_id", "0009") == False)
@@ -59,7 +59,7 @@ good = {"category": "Software", "priority": "High", "confidence": 0.95,
         "summary": "App crashes", "affected_system": "Excel",
         "security_related": False, "requires_escalation": False,
         "troubleshooting": ["Restart Excel"]}
-second = create_ticket("0002", "tester", "Windows", "Excel crash", "excel closes every time I open it")
+second = create_ticket("0002", "tester", "2600002", "Windows", "Excel crash", "excel closes every time I open it")
 data_manager.attach_ai_result(second, process_ticket(good))
 check("no error when manual review key is missing", second["requires_manual_review"] == False)
 check("second ticket added", data_manager.add_ticket(tickets, second) == True)
@@ -79,6 +79,11 @@ check("reopen ticket", data_manager.reopen_ticket(tickets, "0001") == True)
 check("reopened ticket can be updated", data_manager.update_ticket(tickets, "0001", "device", "Linux") == True)
 check("reopened ticket can be closed again", data_manager.close_ticket(tickets, "0001") == True)
 check("missing ticket cannot be closed", data_manager.close_ticket(tickets, "9999") == False)
+
+# tickets saved before the student id question
+old_ticket = {"ticket_id": "0009", "username": "old"}
+check("missing student id gives empty text", data_manager.get_student_id(old_ticket) == "")
+check("student id is returned when present", data_manager.get_student_id(ticket) == "2600001")
 
 # csv export
 check("csv export", data_manager.export_tickets_csv(tickets) == True)

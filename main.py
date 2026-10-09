@@ -19,6 +19,7 @@ def submit_ticket(io_manager: IOManager, tickets: list):
         ticket = create_ticket(
             ticket_id=data_manager.generate_ticket_id(tickets),
             username=user_input["username"],
+            student_id=user_input["student_id"],
             device=user_input["device"],
             title=user_input["title"],
             description=user_input["description"],
@@ -81,10 +82,10 @@ def main():
 
     io_mgr = IOManager()
     tickets = data_manager.load_tickets()
-    show_menu()
 
     while True:
-        option = input("\nEnter option: ")
+        show_menu()
+        option = input("Enter option: ")
         if option == "1":
             submit_ticket(io_mgr, tickets)
         elif option == "2":
@@ -109,7 +110,6 @@ def main():
             break
         else:
             print("Invalid option, please pick 1 to 7.")
-            show_menu()
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@
     {
         "ticket_id": "0001",
         "username": "Muhaini",
+        "student_id": "2600001",
         "device": "Windows",
         "title": "Network issue",
         "description": "unable to connect to the school wifi",

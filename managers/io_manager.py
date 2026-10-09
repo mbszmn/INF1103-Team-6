@@ -11,7 +11,15 @@ class IOManager:
 
     def collect_ticket_input(self) -> dict:
         username = self._required_input("Name / Username: ")
-        device = self._required_input("Device: ")
+        while True:
+            student_id = input("Student ID (type staff if you are staff): ").strip()
+            if student_id.isdigit():
+                break
+            if student_id.lower() == "staff":
+                student_id = "staff"
+                break
+            print("Student ID must be numbers only. Staff can type staff.")
+        device = self._required_input("Device model (e.g. Dell Latitude 5420): ")
         title = self._required_input("Ticket title: ")
         description = self._required_input("Describe the problem: ")
 
@@ -28,6 +36,7 @@ class IOManager:
 
         data = {
                 "username": username,
+                "student_id": student_id,
                 "device": device,
                 "title": title,
                 "description": description,
@@ -47,6 +56,7 @@ class IOManager:
 
         required_fields = [
                 "username",
+                "student_id",
                 "device",
                 "title",
                 "description",
