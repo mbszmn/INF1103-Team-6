@@ -7,13 +7,13 @@ from managers.logic_manager import fallback_classification
 # Initialize client at module level (or inside function as needed)
 client = genai.Client()
 
-def analyze_ticket(
+def analyse_ticket(
     title: str, 
     description: str, 
     device: str = "Unknown", 
     error_message: str = "", 
     steps_attempted: str = "",
-    model_name: str = "gemini-3.8-flash"
+    model_name: str = "gemini-3.5-flash-lite"
 ) -> dict:
     """
     Sends ticket inputs to Google AI Studio with strict prompt guardrails 
@@ -31,6 +31,12 @@ def analyze_ticket(
     - Error Message: "{error_message}"
     - Steps Already Attempted: "{steps_attempted}"
 
+    [INSTRUCTIONS FOR TROUBLESHOOTING]:
+    - Provide 2 to 3 highly specific, step-by-step actionable recommendations to resolve or diagnose the issue.
+    - Adapt the steps directly to the user's OS/Device ("{device}").
+    - DO NOT recommend steps the user has already attempted: "{steps_attempted}".
+    - If error details or symptoms are vague, suggest diagnostic checks (e.g., checking Event Viewer, device logs, or network settings).
+
     Analyze the ticket and return a valid JSON object ONLY containing:
     - "category": "Network" | "Hardware" | "Software" | "Account" | "Security" | "Other"
     - "priority": "Low" | "Medium" | "High" | "Critical"
@@ -39,7 +45,7 @@ def analyze_ticket(
     - "affected_system": specific system, software, or hardware component
     - "security_related": boolean (true if malware, phishing, credentials, or unauthorized access)
     - "requires_escalation": boolean (true if immediate human specialist intervention is needed)
-    - "troubleshooting": list of 2-3 actionable steps tailored to the user's device and issue
+    - "troubleshooting": list of strings (2-3 concrete actionable troubleshooting steps)
     """
 
     # Retries/fallback to logic
@@ -51,7 +57,7 @@ def analyze_ticket(
                 contents=prompt,
                 config=types.GenerateContentConfig(
                     response_mime_type="application/json",
-                    temperature=0.1
+                    temperature=0.2
                 )
             )
 

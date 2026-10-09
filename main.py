@@ -50,7 +50,14 @@ def submit_ticket(io_manager: IOManager, tickets: list):
         if data_manager.add_ticket(tickets, ticket):
             print(f"\nTicket {ticket['ticket_id']} successfully processed and saved!")
             print(f"Category: {processed_result['category']} | Priority: {ticket['final_priority']}")
-
+            
+            # Print AI troubleshooting steps directly to the user
+            troubleshooting_steps = processed_result.get("troubleshooting", [])
+            if troubleshooting_steps:
+                print("\nSuggested Immediate Troubleshooting Steps:")
+                for idx, step in enumerate(troubleshooting_steps, 1):
+                    print(f"  {idx}. {step}")
+                    
     except ValueError as error:
         print(f"ERROR: {error}")
 
