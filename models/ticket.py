@@ -2,16 +2,16 @@ from datetime import datetime
 
 
 def create_ticket(
-    ticket_id: str,
-    username: str,
-    student_id: str,
-    device: str,
-    title: str,
-    description: str,
-    steps_attempted: str = "",
-    user_priority: str = "Medium",
-    error_message: str = "",
-) -> dict:
+    ticket_id,
+    username,
+    student_id,
+    device,
+    title,
+    description,
+    steps_attempted = "",
+    user_priority = "Medium",
+    error_message = "",
+):
     """Create a new ticket as a dictionary."""
 
     current_time = datetime.now().isoformat(timespec="seconds")

@@ -4,14 +4,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # import the managers
-from managers.io_manager import IOManager
+from managers import io_manager
 from managers.ai_manager import analyse_ticket  
 from managers.logic_manager import process_ticket
 from managers import data_manager
 from models.ticket import create_ticket
 
 
-def submit_ticket(io_manager: IOManager, tickets: list):
+def submit_ticket(tickets):
     try:
         user_input = io_manager.collect_ticket_input()
 
@@ -80,14 +80,13 @@ def main():
     print("AI SIT HELPDESK TICKET TRIAGE SYSTEM")
     print("========================================\n")
 
-    io_mgr = IOManager()
     tickets = data_manager.load_tickets()
 
     while True:
         show_menu()
         option = input("Enter option: ")
         if option == "1":
-            submit_ticket(io_mgr, tickets)
+            submit_ticket(tickets)
         elif option == "2":
             data_manager.display_all(tickets)
         elif option == "3":
