@@ -1,7 +1,7 @@
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
 # load the api key frm .env file
-load_dotenv()
+#load_dotenv()
 
 # import the managers
 from managers import io_manager

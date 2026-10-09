@@ -1,6 +1,5 @@
 VALID_USER_PRIORITIES = {"Low", "Medium", "High", "Critical"}
 
-
 def _required_input(prompt):
     while True:
         value = input(prompt).strip()
