@@ -136,7 +136,8 @@ def reopen_ticket(tickets: list, ticket_id: str) -> bool:
 def display_ticket(ticket: dict) -> None:
     print(LINE)
     print("Ticket ID:", ticket["ticket_id"])
-    print("User:", ticket["username"], "| Device:", ticket["device"])
+    print("User:", ticket["username"], "| Student / Staff ID:", ticket["user_id"])
+    print("Device model:", ticket["device"])
     print("Title:", ticket["title"])
     print("Description:", ticket["description"])
     print("Status:", ticket["status"], "| Priority:", ticket["final_priority"])
@@ -165,7 +166,7 @@ def export_tickets_csv(tickets: list) -> bool:
     # csv version for staff to open in excel, text goes in quotes in case it has commas
     try:
         with open(CSV_FILE, "w", encoding="utf-8") as file:
-            file.write("ticket_id,username,device,title,category,"
+            file.write("ticket_id,username,user_id,device,title,category,"
                        + "final_priority,status,escalated,created_at\n")
             for ticket in tickets:
                 category = ""
@@ -173,6 +174,7 @@ def export_tickets_csv(tickets: list) -> bool:
                     category = ticket["ai_analysis"]["category"]
                 file.write(ticket["ticket_id"] + ","
                            + '"' + ticket["username"] + '",'
+                           + ticket["user_id"] + ","
                            + '"' + ticket["device"] + '",'
                            + '"' + ticket["title"] + '",'
                            + category + ","

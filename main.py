@@ -19,6 +19,7 @@ def submit_ticket(io_manager: IOManager, ai_manager: AIManager, tickets: list):
         ticket = create_ticket(
             ticket_id=data_manager.generate_ticket_id(tickets),
             username=user_input["username"],
+            user_id=user_input["user_id"],
             device=user_input["device"],
             title=user_input["title"],
             description=user_input["description"],

@@ -11,7 +11,8 @@ class IOManager:
 
     def collect_ticket_input(self) -> dict:
         username = self._required_input("Name / Username: ")
-        device = self._required_input("Device: ")
+        user_id = self._required_input("Student / Staff ID: ")
+        device = self._required_input("Device model (e.g. Dell Latitude 5420): ")
         title = self._required_input("Ticket title: ")
         description = self._required_input("Describe the problem: ")
 
@@ -28,6 +29,7 @@ class IOManager:
 
         data = {
                 "username": username,
+                "user_id": user_id,
                 "device": device,
                 "title": title,
                 "description": description,
@@ -47,6 +49,7 @@ class IOManager:
 
         required_fields = [
                 "username",
+                "user_id",
                 "device",
                 "title",
                 "description",
