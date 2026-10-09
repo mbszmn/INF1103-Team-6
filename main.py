@@ -5,13 +5,13 @@ load_dotenv()
 
 # import the managers
 from managers.io_manager import IOManager
-from managers.ai_manager import AIManager
+from managers.ai_manager import analyse_ticket  
 from managers.logic_manager import process_ticket
 from managers import data_manager
 from models.ticket import create_ticket
 
 
-def submit_ticket(io_manager: IOManager, ai_manager: AIManager, tickets: list):
+def submit_ticket(io_manager: IOManager, tickets: list):
     try:
         user_input = io_manager.collect_ticket_input()
 
@@ -27,10 +27,10 @@ def submit_ticket(io_manager: IOManager, ai_manager: AIManager, tickets: list):
             error_message=user_input["error_message"],
         )
 
-        print("\nAnalyzing ticket with AI...")
+        print("\nAnalysing ticket with AI...")
 
-        # Pass along the fields frm the tix to the AI manager
-        ai_analysis = ai_manager.analyze_ticket(
+        # function call to AI Manager
+        ai_analysis = analyse_ticket(
             title=ticket["title"],
             description=ticket["description"],
             device=ticket["device"],
@@ -73,20 +73,19 @@ def main():
     print("========================================\n")
 
     io_mgr = IOManager()
-    ai_mgr = AIManager()
     tickets = data_manager.load_tickets()
     show_menu()
 
     while True:
         option = input("\nEnter option: ")
         if option == "1":
-            submit_ticket(io_mgr, ai_mgr, tickets)
+            submit_ticket(io_mgr, tickets)
         elif option == "2":
             data_manager.display_all(tickets)
         elif option == "3":
             ticket_id = input("Enter ticket ID: ")
             ticket = data_manager.find_ticket(tickets, ticket_id)
-            if ticket == None:
+            if ticket is None:
                 print("Ticket", ticket_id, "not found.")
             else:
                 data_manager.display_ticket(ticket)
