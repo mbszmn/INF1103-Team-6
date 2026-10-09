@@ -80,6 +80,11 @@ check("reopened ticket can be updated", data_manager.update_ticket(tickets, "000
 check("reopened ticket can be closed again", data_manager.close_ticket(tickets, "0001") == True)
 check("missing ticket cannot be closed", data_manager.close_ticket(tickets, "9999") == False)
 
+# tickets saved before the student id question
+old_ticket = {"ticket_id": "0009", "username": "old"}
+check("missing student id gives empty text", data_manager.get_student_id(old_ticket) == "")
+check("student id is returned when present", data_manager.get_student_id(ticket) == "2600001")
+
 # csv export
 check("csv export", data_manager.export_tickets_csv(tickets) == True)
 with open(data_manager.CSV_FILE, "r") as file:

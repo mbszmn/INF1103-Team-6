@@ -133,27 +133,33 @@ def reopen_ticket(tickets: list, ticket_id: str) -> bool:
     return saved
 
 
+def get_student_id(ticket: dict) -> str:
+    # tickets saved before the student id question existed do not have this key
+    if "student_id" in ticket.keys():
+        return ticket["student_id"]
+    return ""
+
+
 def display_ticket(ticket: dict) -> None:
     print(LINE)
     print("Ticket ID:", ticket["ticket_id"])
-    print("User:", ticket["username"], "| Student ID:", ticket["student_id"])
+    print("User:", ticket["username"], "| Student ID:", get_student_id(ticket))
     print("Device model:", ticket["device"])
     print("Title:", ticket["title"])
     print("Description:", ticket["description"])
     print("Status:", ticket["status"], "| Priority:", ticket["final_priority"])
     print("Escalated:", ticket["escalated"],
           "| Manual review:", ticket["requires_manual_review"])
-    if ticket.get("ai_analysis"):
-        print("AI Category:", ticket["ai_analysis"].get("category"))
-        print("AI Summary:", ticket["ai_analysis"].get("summary"))
-        
-        # Print saved troubleshooting list
-        steps = ticket["ai_analysis"].get("troubleshooting", [])
-        if steps:
-            print("\nRecommended Troubleshooting Steps:")
-            for idx, step in enumerate(steps, 1):
-                print(f"  {idx}. {step}")
-                
+    if ticket["ai_analysis"] != {}:
+        print("AI Category:", ticket["ai_analysis"]["category"])
+        print("AI Summary:", ticket["ai_analysis"]["summary"])
+        steps = ticket["ai_analysis"]["troubleshooting"]
+        if len(steps) > 0:
+            print("Recommended Troubleshooting Steps:")
+            number = 1
+            for step in steps:
+                print("  " + str(number) + ". " + step)
+                number = number + 1
     print("Created:", ticket["created_at"], "| Updated:", ticket["updated_at"])
     print(LINE)
 
@@ -182,7 +188,7 @@ def export_tickets_csv(tickets: list) -> bool:
                     category = ticket["ai_analysis"]["category"]
                 file.write(ticket["ticket_id"] + ","
                            + '"' + ticket["username"] + '",'
-                           + ticket["student_id"] + ","
+                           + get_student_id(ticket) + ","
                            + '"' + ticket["device"] + '",'
                            + '"' + ticket["title"] + '",'
                            + category + ","
