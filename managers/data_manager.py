@@ -143,9 +143,17 @@ def display_ticket(ticket: dict) -> None:
     print("Status:", ticket["status"], "| Priority:", ticket["final_priority"])
     print("Escalated:", ticket["escalated"],
           "| Manual review:", ticket["requires_manual_review"])
-    if ticket["ai_analysis"] != {}:
-        print("AI Category:", ticket["ai_analysis"]["category"])
-        print("AI Summary:", ticket["ai_analysis"]["summary"])
+    if ticket.get("ai_analysis"):
+        print("AI Category:", ticket["ai_analysis"].get("category"))
+        print("AI Summary:", ticket["ai_analysis"].get("summary"))
+        
+        # Print saved troubleshooting list
+        steps = ticket["ai_analysis"].get("troubleshooting", [])
+        if steps:
+            print("\nRecommended Troubleshooting Steps:")
+            for idx, step in enumerate(steps, 1):
+                print(f"  {idx}. {step}")
+                
     print("Created:", ticket["created_at"], "| Updated:", ticket["updated_at"])
     print(LINE)
 
