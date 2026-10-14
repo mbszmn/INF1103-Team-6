@@ -300,5 +300,71 @@
         "requires_manual_review": true,
         "created_at": "2026-10-14T10:41:12",
         "updated_at": "2026-10-14T10:41:12"
+    },
+    {
+        "ticket_id": "0011",
+        "username": "Radcliffe",
+        "student_id": "staff",
+        "device": "iphone18",
+        "title": "title1",
+        "description": "problem123123",
+        "steps_attempted": "",
+        "user_priority": "Critical",
+        "error_message": "",
+        "ai_analysis": {
+            "category": "Other",
+            "priority": "Low",
+            "confidence": 0.5,
+            "summary": "The user reported a vague issue on an iPhone device without providing specific error messages or attempted steps.",
+            "affected_system": "iphone18",
+            "security_related": false,
+            "requires_escalation": false,
+            "troubleshooting": [
+                "Restart your iPhone 18 by holding the side button and volume down button, then sliding to power off, to clear any temporary system glitches.",
+                "Check your network settings by toggling Airplane Mode on and off, or resetting network settings via Settings > General > Transfer or Reset iPhone > Reset > Reset Network Settings.",
+                "Ensure your iOS is fully updated to the latest version by going to Settings > General > Software Update to resolve potential software bugs."
+            ],
+            "requires_manual_review": true,
+            "action": "MANUAL_REVIEW"
+        },
+        "final_priority": "Low",
+        "status": "Open",
+        "escalated": false,
+        "requires_manual_review": true,
+        "created_at": "2026-10-14T02:43:01",
+        "updated_at": "2026-10-14T02:43:01"
+    },
+    {
+        "ticket_id": "0012",
+        "username": "Radcliffe",
+        "student_id": "staff",
+        "device": "iphone18",
+        "title": "title1",
+        "description": "problem1234",
+        "steps_attempted": "",
+        "user_priority": "Critical",
+        "error_message": "",
+        "ai_analysis": {
+            "category": "Other",
+            "priority": "Medium",
+            "confidence": 0.5,
+            "summary": "User reports an unspecified problem on an iphone18 device with no error message provided.",
+            "affected_system": "iphone18",
+            "security_related": false,
+            "requires_escalation": false,
+            "troubleshooting": [
+                "Restart the iphone18 to clear any temporary system glitches or background processes causing the unspecified issue.",
+                "Check for any pending iOS software updates in Settings > General > Software Update to ensure the device is running the latest stable version.",
+                "Verify network settings by toggling Airplane Mode on and off, or resetting network settings via Settings > General > Transfer or Reset iPhone > Reset > Reset Network Settings if connectivity or app loading is affected."
+            ],
+            "requires_manual_review": true,
+            "action": "MANUAL_REVIEW"
+        },
+        "final_priority": "Medium",
+        "status": "Open",
+        "escalated": false,
+        "requires_manual_review": true,
+        "created_at": "2026-10-14T10:46:25",
+        "updated_at": "2026-10-14T10:46:25"
     }
 ]

@@ -70,10 +70,10 @@ def validate_ticket_input(data):
         if not str(data.get(field, "")).strip():
             errors.append(f"{field} cannot be empty.")
 
-    description = str(data.get("description", "")).strip()
-    if description and len(description) < 10:
-            errors.append(
-                    "Description is too short. Please provide at least 10 characters."
-                )
+    # description = str(data.get("description", "")).strip()
+    # if description and len(description) < 10:
+    #         errors.append(
+    #                 "Description is too short. Please provide at least 10 characters."
+    #             )
         
     return errors
