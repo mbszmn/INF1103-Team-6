@@ -7,9 +7,9 @@ def _required_input(prompt):
             return value
         print("This field cannot be empty.")
 
-
 def collect_ticket_input():
     username = _required_input("Name / Username: ")
+
     while True:
         student_id = input("Student ID (type staff if you are staff): ").strip()
         if student_id.isdigit():
@@ -18,8 +18,10 @@ def collect_ticket_input():
             student_id = "staff"
             break
         print("Student ID must be numbers only. Staff can type staff.")
+
     device = _required_input("Device model (e.g. Dell Latitude 5420): ")
     title = _required_input("Ticket title: ")
+
     while True:
         description = _required_input("Describe the problem: ").strip()
         if len(description) >= 10:
@@ -53,7 +55,6 @@ def collect_ticket_input():
         raise ValueError("\n".join(errors))
 
     return data
-
 
 def validate_ticket_input(data):
     errors = []
