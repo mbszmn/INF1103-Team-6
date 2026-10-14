@@ -267,5 +267,38 @@
         "requires_manual_review": true,
         "created_at": "2026-10-10T00:28:54",
         "updated_at": "2026-10-10T00:28:54"
+    },
+    {
+        "ticket_id": "0010",
+        "username": "Radcliffe",
+        "student_id": "staff",
+        "device": "iphone17",
+        "title": "Title1",
+        "description": "problemfmiermfr",
+        "steps_attempted": "",
+        "user_priority": "Critical",
+        "error_message": "",
+        "ai_analysis": {
+            "category": "Other",
+            "priority": "Low",
+            "confidence": 0.5,
+            "summary": "The user reported an unspecified issue on an iphone17 with vague description details.",
+            "affected_system": "iphone17",
+            "security_related": false,
+            "requires_escalation": false,
+            "troubleshooting": [
+                "Restart the iphone17 to clear any temporary system glitches or background process hangs.",
+                "Check the device storage and iOS version in Settings > General > About to ensure the system is up to date.",
+                "Verify network connectivity by toggling Wi-Fi and Cellular Data off and back on."
+            ],
+            "requires_manual_review": true,
+            "action": "MANUAL_REVIEW"
+        },
+        "final_priority": "Low",
+        "status": "Open",
+        "escalated": false,
+        "requires_manual_review": true,
+        "created_at": "2026-10-14T10:41:12",
+        "updated_at": "2026-10-14T10:41:12"
     }
 ]

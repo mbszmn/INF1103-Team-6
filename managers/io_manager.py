@@ -20,7 +20,11 @@ def collect_ticket_input():
         print("Student ID must be numbers only. Staff can type staff.")
     device = _required_input("Device model (e.g. Dell Latitude 5420): ")
     title = _required_input("Ticket title: ")
-    description = _required_input("Describe the problem: ")
+    while True:
+        description = _required_input("Describe the problem: ").strip()
+        if len(description) >= 10:
+            break
+        print("Description is too short. Please provide at least 10 characters.")
 
     steps_attempted = input("steps already attempted (press Enter if none): ").strip()
 
