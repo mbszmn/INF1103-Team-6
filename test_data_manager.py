@@ -13,7 +13,7 @@ if os.path.exists(data_manager.TICKET_FILE):
 results = []
 
 
-def check(name: str, result: bool) -> None:
+def check(name, result):
     if result:
         print("PASS", name)
     else:

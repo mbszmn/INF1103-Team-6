@@ -8,12 +8,12 @@ CSV_FILE = "data/tickets.csv"
 LINE = "------------------------------------------------"
 
 
-def current_time() -> str:
+def current_time():
     # same format as created_at in models/ticket.py
     return datetime.datetime.now().isoformat(timespec="seconds")
 
 
-def load_tickets() -> list:
+def load_tickets():
     if not os.path.exists(TICKET_FILE):
         print(TICKET_FILE, "not found, starting with no tickets.")
         return []
@@ -37,7 +37,7 @@ def load_tickets() -> list:
     return tickets
 
 
-def save_tickets(tickets: list) -> bool:
+def save_tickets(tickets):
     try:
         if not os.path.exists(DATA_FOLDER):
             os.mkdir(DATA_FOLDER)
@@ -49,7 +49,7 @@ def save_tickets(tickets: list) -> bool:
     return True
 
 
-def generate_ticket_id(tickets: list) -> str:
+def generate_ticket_id(tickets):
     # biggest id so far + 1
     largest = 0
     for ticket in tickets:
@@ -65,14 +65,14 @@ def generate_ticket_id(tickets: list) -> str:
     return new_id
 
 
-def find_ticket(tickets: list, ticket_id: str) -> dict | None:
+def find_ticket(tickets, ticket_id):
     for ticket in tickets:
         if ticket["ticket_id"] == ticket_id:
             return ticket
     return None
 
 
-def add_ticket(tickets: list, ticket: dict) -> bool:
+def add_ticket(tickets, ticket):
     # ids must be unique
     if find_ticket(tickets, ticket["ticket_id"]) != None:
         print("Ticket ID", ticket["ticket_id"], "already exists.")
@@ -81,7 +81,7 @@ def add_ticket(tickets: list, ticket: dict) -> bool:
     return save_tickets(tickets)
 
 
-def attach_ai_result(ticket: dict, ai_result: dict) -> None:
+def attach_ai_result(ticket, ai_result):
     # keep the ai output inside the ticket so both get saved together
     ticket["ai_analysis"] = ai_result
     ticket["final_priority"] = ai_result["priority"]
@@ -91,7 +91,7 @@ def attach_ai_result(ticket: dict, ai_result: dict) -> None:
         ticket["requires_manual_review"] = ai_result["requires_manual_review"]
 
 
-def update_ticket(tickets: list, ticket_id: str, field: str, new_value: str) -> bool:
+def update_ticket(tickets, ticket_id, field, new_value):
     ticket = find_ticket(tickets, ticket_id)
     if ticket == None:
         print("Ticket", ticket_id, "not found.")
@@ -109,14 +109,14 @@ def update_ticket(tickets: list, ticket_id: str, field: str, new_value: str) -> 
     return save_tickets(tickets)
 
 
-def close_ticket(tickets: list, ticket_id: str) -> bool:
+def close_ticket(tickets, ticket_id):
     closed = update_ticket(tickets, ticket_id, "status", "Closed")
     if closed:
         print("Ticket", ticket_id, "closed.")
     return closed
 
 
-def reopen_ticket(tickets: list, ticket_id: str) -> bool:
+def reopen_ticket(tickets, ticket_id):
     ticket = find_ticket(tickets, ticket_id)
     if ticket == None:
         print("Ticket", ticket_id, "not found.")
@@ -133,14 +133,14 @@ def reopen_ticket(tickets: list, ticket_id: str) -> bool:
     return saved
 
 
-def get_student_id(ticket: dict) -> str:
+def get_student_id(ticket):
     # tickets saved before the student id question existed do not have this key
     if "student_id" in ticket.keys():
         return ticket["student_id"]
     return ""
 
 
-def display_ticket(ticket: dict) -> None:
+def display_ticket(ticket):
     print(LINE)
     print("Ticket ID:", ticket["ticket_id"])
     print("User:", ticket["username"], "| Student ID:", get_student_id(ticket))
@@ -164,7 +164,7 @@ def display_ticket(ticket: dict) -> None:
     print(LINE)
 
 
-def display_all(tickets: list) -> None:
+def display_all(tickets):
     print("\nAll Tickets")
     print(LINE)
     if len(tickets) == 0:
@@ -176,7 +176,7 @@ def display_all(tickets: list) -> None:
     print(LINE)
 
 
-def export_tickets_csv(tickets: list) -> bool:
+def export_tickets_csv(tickets):
     # csv version for staff to open in excel, text goes in quotes in case it has commas
     try:
         with open(CSV_FILE, "w", encoding="utf-8") as file:

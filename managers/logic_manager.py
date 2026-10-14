@@ -15,7 +15,7 @@ VALID_PRIORITIES = {
 }
 
 
-def validate_ai_response(ai_response: dict) -> list[str]:
+def validate_ai_response(ai_response):
     """Validate the structure and values of an AI-enriched ticket."""
     errors = []
 
@@ -71,7 +71,7 @@ def validate_ai_response(ai_response: dict) -> list[str]:
     return errors
 
 
-def apply_security_rule(ai_response: dict) -> dict:
+def apply_security_rule(ai_response):
     """Escalate tickets identified as security-related."""
     result = ai_response.copy()
 
@@ -89,7 +89,7 @@ def apply_security_rule(ai_response: dict) -> dict:
     return result
 
 
-def apply_confidence_rule(ai_response: dict) -> dict:
+def apply_confidence_rule(ai_response):
     """Send low-confidence AI results for manual review."""
     result = ai_response.copy()
 
@@ -102,7 +102,7 @@ def apply_confidence_rule(ai_response: dict) -> dict:
     return result
 
 
-def apply_priority_rule(ai_response: dict) -> dict:
+def apply_priority_rule(ai_response):
     """Place critical tickets at the top of the support queue."""
     result = ai_response.copy()
 
@@ -112,7 +112,7 @@ def apply_priority_rule(ai_response: dict) -> dict:
     return result
 
 
-def fallback_classification(description: str) -> dict:
+def fallback_classification(description):
     """Classify a ticket using keywords when the AI service is unavailable."""
     text = description.lower()
 
@@ -143,7 +143,7 @@ def fallback_classification(description: str) -> dict:
     }
 
 
-def process_ticket(ai_response: dict) -> dict:
+def process_ticket(ai_response):
     """Validate an AI response and apply all Logic Manager rules."""
     validation_errors = validate_ai_response(ai_response)
 

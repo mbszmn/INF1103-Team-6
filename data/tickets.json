@@ -22,11 +22,11 @@
             "action": "MANUAL_REVIEW"
         },
         "final_priority": "Medium",
-        "status": "Open",
+        "status": "Reopened",
         "escalated": false,
         "requires_manual_review": true,
         "created_at": "2026-10-02T03:11:52",
-        "updated_at": "2026-10-02T03:11:52"
+        "updated_at": "2026-10-10T00:11:16"
     },
     {
         "ticket_id": "0002",
@@ -201,5 +201,71 @@
         "requires_manual_review": false,
         "created_at": "2026-10-09T13:59:39",
         "updated_at": "2026-10-09T13:59:39"
+    },
+    {
+        "ticket_id": "0008",
+        "username": "Radcliffe",
+        "student_id": "2603211",
+        "device": "Laptop",
+        "title": "Ransomeware",
+        "description": "need pay money to uninstall program",
+        "steps_attempted": "",
+        "user_priority": "Critical",
+        "error_message": "",
+        "ai_analysis": {
+            "category": "Security",
+            "priority": "Critical",
+            "confidence": 0.99,
+            "summary": "The user's laptop is showing signs of a ransomware infection demanding payment to remove a locked program.",
+            "affected_system": "Laptop",
+            "security_related": true,
+            "requires_escalation": true,
+            "troubleshooting": [
+                "Immediately disconnect the laptop from the internet (unplug the Ethernet cable and disable Wi-Fi) to prevent the ransomware from spreading to other network shares or devices.",
+                "Do not attempt to pay the ransom or interact with the locking software.",
+                "Power down the laptop and contact the SIT IT Security Incident Response team immediately for forensic isolation and remediation."
+            ],
+            "action": "ESCALATE",
+            "queue_position": "TOP"
+        },
+        "final_priority": "Critical",
+        "status": "Open",
+        "escalated": true,
+        "requires_manual_review": false,
+        "created_at": "2026-10-10T00:04:59",
+        "updated_at": "2026-10-10T00:04:59"
+    },
+    {
+        "ticket_id": "0009",
+        "username": "Radcliffe",
+        "student_id": "2603211",
+        "device": "NJDIOAWJIWAJDOAWJDIO",
+        "title": "jeawiopfjaewpifjwpijirvnri",
+        "description": "vfdsvfdsnjviofdjnsiov",
+        "steps_attempted": "",
+        "user_priority": "Low",
+        "error_message": "",
+        "ai_analysis": {
+            "category": "Other",
+            "priority": "Low",
+            "confidence": 0.2,
+            "summary": "The ticket contains gibberish text in the title, device, and description fields, making it unclear.",
+            "affected_system": "NJDIOAWJIWAJDOAWJDIO",
+            "security_related": false,
+            "requires_escalation": false,
+            "troubleshooting": [
+                "Verify the device name and OS details on NJDIOAWJIWAJDOAWJDIO by checking system properties.",
+                "Contact the user to obtain a clear and accurate description of the technical issue they are experiencing.",
+                "Review local system logs or Event Viewer on NJDIOAWJIWAJDOAWJDIO for any unexpected errors."
+            ],
+            "requires_manual_review": true,
+            "action": "MANUAL_REVIEW"
+        },
+        "final_priority": "Low",
+        "status": "Open",
+        "escalated": false,
+        "requires_manual_review": true,
+        "created_at": "2026-10-10T00:28:54",
+        "updated_at": "2026-10-10T00:28:54"
     }
 ]
