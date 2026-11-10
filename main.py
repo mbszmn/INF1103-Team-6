@@ -4,14 +4,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # import the managers
-from managers import io_manager
+from managers import IOManager
 from managers.ai_manager import analyse_ticket  
 from managers.logic_manager import process_ticket
 from managers import data_manager
 from models.ticket import create_ticket
 
 
-def submit_ticket(tickets):
+def submit_ticket(tickets, io_manager):
     try:
         user_input = io_manager.collect_ticket_input()
 
@@ -28,7 +28,7 @@ def submit_ticket(tickets):
             error_message=user_input["error_message"],
         )
 
-        print("\nAnalysing ticket with AI...")
+        io_manager.display_message("\nAnalysing ticket with AI...")
 
         # function call to AI Manager
         ai_analysis = analyse_ticket(
@@ -43,72 +43,49 @@ def submit_ticket(tickets):
         processed_result = process_ticket(ai_analysis)
 
         if processed_result.get("action") == "REJECT":
-            print("ERROR: AI response failed validation rules.")
+            io_manager.display_message("ERROR: AI response failed validation rules.")
             return
 
         # save the ticket together with the ai result
         data_manager.attach_ai_result(ticket, processed_result)
         if data_manager.add_ticket(tickets, ticket):
-            print(f"\nTicket {ticket['ticket_id']} successfully processed and saved!")
-            print(f"Category: {processed_result['category']} | Priority: {ticket['final_priority']}")
-            
-            # Print AI troubleshooting steps directly to the user
-            troubleshooting_steps = processed_result.get("troubleshooting", [])
-            if troubleshooting_steps:
-                print("\nSuggested Immediate Troubleshooting Steps:")
-                for idx, step in enumerate(troubleshooting_steps, 1):
-                    print(f"  {idx}. {step}")
+            io_manager.display_submission_result(ticket)
                     
     except ValueError as error:
-        print(f"ERROR: {error}")
-
-
-def show_menu():
-    print("\n----------- MENU -----------")
-    print("1. Submit New Ticket")
-    print("2. View All Tickets")
-    print("3. Search Ticket by ID")
-    print("4. Close Ticket")
-    print("5. Reopen Ticket")
-    print("6. Export Tickets to CSV")
-    print("7. Exit")
-    print("----------------------------")
-
+        io_manager.display_message(f"ERROR: {error}")
 
 def main():
-    print("========================================")
-    print("AI SIT HELPDESK TICKET TRIAGE SYSTEM")
-    print("========================================\n")
+    io_manager = IOManager()
+    io_manager.show_welcome()
 
     tickets = data_manager.load_tickets()
 
     while True:
-        show_menu()
-        option = input("Enter option: ")
+        option = io_manager.get_menu_option()
         if option == "1":
-            submit_ticket(tickets)
+            submit_ticket(tickets, io_manager)
         elif option == "2":
             data_manager.display_all(tickets)
         elif option == "3":
-            ticket_id = input("Enter ticket ID: ")
+            ticket_id = io_manager.get_ticket_id()
             ticket = data_manager.find_ticket(tickets, ticket_id)
             if ticket is None:
-                print("Ticket", ticket_id, "not found.")
+                io_manager.display_message(f"Ticket {ticket_id} not found.")
             else:
                 data_manager.display_ticket(ticket)
         elif option == "4":
-            ticket_id = input("Enter ticket ID to close: ")
+            ticket_id = io_manager.get_ticket_id("Enter ticket ID to close: ")
             data_manager.close_ticket(tickets, ticket_id)
         elif option == "5":
-            ticket_id = input("Enter ticket ID to reopen: ")
+            ticket_id = io_manager.get_ticket_id("Enter ticket ID to reopen: ")
             data_manager.reopen_ticket(tickets, ticket_id)
         elif option == "6":
             data_manager.export_tickets_csv(tickets)
         elif option == "7":
-            print("\nThank you for using the Helpdesk Ticket Triage System.")
+            io_manager.display_message("\nThank you for using the Helpdesk Ticket Triage System.")
             break
         else:
-            print("Invalid option, please pick 1 to 7.")
+            io_manager.display_message("Invalid option, please pick 1 to 7.")
 
 
 if __name__ == "__main__":
