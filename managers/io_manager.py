@@ -17,6 +17,10 @@ class IOManager:
                 return value
             print(error)
 
+	# Return errors without prompting, so other callers can validate too
+    def validate_ticket_input(self, data):
+        return self._validator.validate(data)
+
     def collect_ticket_input(self):
         data = {
             "username": self._read_validated_input("username", "Name / Username: "),

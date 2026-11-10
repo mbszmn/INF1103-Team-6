@@ -585,5 +585,38 @@
         "requires_manual_review": false,
         "created_at": "2026-10-23T05:20:54",
         "updated_at": "2026-10-23T05:20:54"
+    },
+    {
+        "ticket_id": "0020",
+        "username": "Rad",
+        "student_id": "staff",
+        "device": "lenovo",
+        "title": "malware",
+        "description": "malware on my laptop",
+        "steps_attempted": "",
+        "user_priority": "High",
+        "error_message": "",
+        "ai_analysis": {
+            "category": "Security",
+            "priority": "Critical",
+            "confidence": 0.98,
+            "summary": "User reports potential malware infection on their Lenovo laptop requiring immediate isolation and security triage.",
+            "affected_system": "Lenovo Laptop",
+            "security_related": true,
+            "requires_escalation": true,
+            "troubleshooting": [
+                "Disconnect the Lenovo laptop from the campus Wi-Fi network and Ethernet immediately to prevent potential network propagation.",
+                "Restart the laptop into Windows Safe Mode with Networking to limit malicious background processes.",
+                "Run an offline system scan using Windows Defender or SIT's enterprise endpoint protection tool."
+            ],
+            "action": "ESCALATE",
+            "queue_position": "TOP"
+        },
+        "final_priority": "Critical",
+        "status": "Open",
+        "escalated": true,
+        "requires_manual_review": false,
+        "created_at": "2026-11-11T01:44:53",
+        "updated_at": "2026-11-11T01:44:53"
     }
 ]
