@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # import the managers
-from managers import IOManager
+from managers.io_manager import IOManager
 from managers.ai_manager import analyse_ticket  
 from managers.logic_manager import process_ticket
 from managers import data_manager

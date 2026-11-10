@@ -1,4 +1,4 @@
-from ticket import TicketInputValidator
+from ticket.ticket_input_validator import TicketInputValidator
 
 class IOManager:
     def __init__(self):
