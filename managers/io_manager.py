@@ -18,7 +18,7 @@ class IOManager:
             print(error)
 
 	# Return errors without prompting, so other callers can validate too
-    def validate_ticket_input(self, data):
+    def validate_ticket_input(self, data: dict[str, str]) -> list[str]:
         return self._validator.validate(data)
 
     def collect_ticket_input(self):
@@ -48,7 +48,7 @@ class IOManager:
             raise ValueError("\n".join(errors))
         return data
 
-    def display_message(self, message):
+    def display_message(self, message: str) -> None:
         print(message)
 
     def show_welcome(self):
@@ -71,7 +71,7 @@ class IOManager:
     def get_ticket_id(self, prompt="Enter ticket ID: "):
         return input(prompt).strip()
 
-    def display_submission_result(self, ticket):
+    def display_submission_result(self, ticket: dict[str, str]) -> None:
         analysis = ticket["ai_analysis"]
         print(f"\nTicket {ticket['ticket_id']} successfully processed and saved!")
         print(f"Category: {analysis['category']} | Priority: {ticket['final_priority']}")
