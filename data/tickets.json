@@ -399,5 +399,191 @@
         "requires_manual_review": true,
         "created_at": "2026-10-14T02:49:54",
         "updated_at": "2026-10-14T02:49:54"
+    },
+    {
+        "ticket_id": "0014",
+        "username": "Radcliffe",
+        "student_id": "2603211",
+        "device": "Lenovo Thinkpad",
+        "title": "Problem with my wifi",
+        "description": "I cant access to my wifi",
+        "steps_attempted": "",
+        "user_priority": "Low",
+        "error_message": "",
+        "ai_analysis": {
+            "category": "Network",
+            "priority": "Medium",
+            "confidence": 0.95,
+            "summary": "User is unable to connect to the wireless network using a Lenovo Thinkpad laptop.",
+            "affected_system": "Lenovo Thinkpad Wi-Fi Adapter",
+            "security_related": false,
+            "requires_escalation": false,
+            "troubleshooting": [
+                "Verify that the physical Wi-Fi switch or Function key (typically Fn + F8) on the Lenovo Thinkpad is enabled and the airplane mode is turned off.",
+                "Open Device Manager, locate the wireless network adapter under 'Network adapters', right-click to uninstall the device driver, and restart the Thinkpad to automatically reinstall it.",
+                "Run the Windows Network Troubleshooter by navigating to Settings > System > Troubleshoot > Other troubleshooters and running the 'Network Adapter' diagnostic tool."
+            ]
+        },
+        "final_priority": "Medium",
+        "status": "Open",
+        "escalated": false,
+        "requires_manual_review": false,
+        "created_at": "2026-10-23T03:59:55",
+        "updated_at": "2026-10-23T03:59:55"
+    },
+    {
+        "ticket_id": "0015",
+        "username": "Radcliffe",
+        "student_id": "2603211",
+        "device": "Lenovo Thinkpad",
+        "title": "Wifi problem",
+        "description": "I cant connect to my wifi",
+        "steps_attempted": "",
+        "user_priority": "Low",
+        "error_message": "",
+        "ai_analysis": {
+            "category": "Network",
+            "priority": "Medium",
+            "confidence": 0.95,
+            "summary": "The user is unable to connect to the Wi-Fi network on their Lenovo Thinkpad laptop.",
+            "affected_system": "Lenovo Thinkpad Wi-Fi Adapter / Network Settings",
+            "security_related": false,
+            "requires_escalation": false,
+            "troubleshooting": [
+                "Verify that the physical wireless switch or function key (typically F8 or Fn + F8) on the Lenovo Thinkpad is toggled on and the airplane mode is disabled.",
+                "Open Device Manager, locate the wireless network adapter under 'Network adapters', right-click to disable it, and then enable it again to reset the hardware.",
+                "Run the Windows Network Troubleshooter by going to Settings > System > Troubleshoot > Other troubleshooters and running the Network Adapter diagnostic."
+            ]
+        },
+        "final_priority": "Medium",
+        "status": "Open",
+        "escalated": false,
+        "requires_manual_review": false,
+        "created_at": "2026-10-23T04:19:33",
+        "updated_at": "2026-10-23T04:19:33"
+    },
+    {
+        "ticket_id": "0016",
+        "username": "Radcliffe",
+        "student_id": "2603211",
+        "device": "Lenovo Thinkpad",
+        "title": "wifi down",
+        "description": "i cant connect to my wifi",
+        "steps_attempted": "",
+        "user_priority": "High",
+        "error_message": "",
+        "ai_analysis": {
+            "category": "Network",
+            "priority": "Medium",
+            "confidence": 0.95,
+            "summary": "The user is unable to connect to the wireless network on their Lenovo Thinkpad laptop.",
+            "affected_system": "Lenovo Thinkpad Wi-Fi Adapter",
+            "security_related": false,
+            "requires_escalation": false,
+            "troubleshooting": [
+                "Verify that the physical Wi-Fi switch or function key toggle (typically F8 or Fn + F8) on the Lenovo Thinkpad is enabled and the airplane mode is turned off.",
+                "Open Device Manager, locate 'Network adapters', right-click the wireless adapter (such as Intel Wireless or Realtek), select 'Disable device', wait 5 seconds, and then select 'Enable device'.",
+                "Run the Windows Network Troubleshooter by going to Settings > System > Troubleshoot > Other troubleshooters and running the Network Adapter diagnostic."
+            ]
+        },
+        "final_priority": "Medium",
+        "status": "Open",
+        "escalated": false,
+        "requires_manual_review": false,
+        "created_at": "2026-10-23T04:43:35",
+        "updated_at": "2026-10-23T04:43:35"
+    },
+    {
+        "ticket_id": "0017",
+        "username": "Radcliffe",
+        "student_id": "2603211",
+        "device": "Lenovo Thinkpad",
+        "title": "Wifi down",
+        "description": "My laptop cant connect to the wifi",
+        "steps_attempted": "",
+        "user_priority": "High",
+        "error_message": "",
+        "ai_analysis": {
+            "category": "Network",
+            "priority": "Medium",
+            "confidence": 0.95,
+            "summary": "The user's Lenovo Thinkpad laptop is unable to connect to the wireless network.",
+            "affected_system": "Lenovo Thinkpad Wi-Fi Adapter",
+            "security_related": false,
+            "requires_escalation": false,
+            "troubleshooting": [
+                "Verify that the physical Wi-Fi switch or function key toggle (commonly F8 or Fn + F8) on the Lenovo Thinkpad is turned on and airplane mode is disabled.",
+                "Open Device Manager, locate the wireless network adapter under 'Network adapters', right-click to disable it, wait a few seconds, and then enable it again to reset the hardware.",
+                "Open the Command Prompt as an administrator, and run the commands 'ipconfig /release', 'ipconfig /renew', and 'netsh winsock reset' to clear and reset the network stack."
+            ]
+        },
+        "final_priority": "Medium",
+        "status": "Open",
+        "escalated": false,
+        "requires_manual_review": false,
+        "created_at": "2026-10-23T05:08:23",
+        "updated_at": "2026-10-23T05:08:23"
+    },
+    {
+        "ticket_id": "0018",
+        "username": "Radcliffe",
+        "student_id": "2603211",
+        "device": "Levono Thinkpad",
+        "title": "wifi down",
+        "description": "My laptop cant connect to the wifi",
+        "steps_attempted": "",
+        "user_priority": "High",
+        "error_message": "",
+        "ai_analysis": {
+            "category": "Network",
+            "priority": "Medium",
+            "confidence": 0.95,
+            "summary": "User is unable to connect to the Wi-Fi network on their Lenovo Thinkpad laptop.",
+            "affected_system": "Levono Thinkpad Wi-Fi Adapter",
+            "security_related": false,
+            "requires_escalation": false,
+            "troubleshooting": [
+                "Verify that the physical Wi-Fi switch or Function key (typically Fn + F8) on the Lenovo Thinkpad is toggled on and the airplane mode is disabled.",
+                "Open Windows Device Manager, expand 'Network adapters', right-click the wireless adapter (e.g., Intel Wi-Fi or Realtek), select 'Disable device', wait 10 seconds, and then select 'Enable device'.",
+                "Open Command Prompt as administrator, run 'netsh winsock reset' and 'ipconfig /renew', then restart the Lenovo Thinkpad to refresh network stacks."
+            ]
+        },
+        "final_priority": "Medium",
+        "status": "Open",
+        "escalated": false,
+        "requires_manual_review": false,
+        "created_at": "2026-10-23T05:12:37",
+        "updated_at": "2026-10-23T05:12:37"
+    },
+    {
+        "ticket_id": "0019",
+        "username": "Radcliffe",
+        "student_id": "2603211",
+        "device": "Lenovo Thinkpad",
+        "title": "Wifi down",
+        "description": "My laptop cant connect to the wifi",
+        "steps_attempted": "",
+        "user_priority": "High",
+        "error_message": "",
+        "ai_analysis": {
+            "category": "Network",
+            "priority": "Medium",
+            "confidence": 0.95,
+            "summary": "The user's Lenovo Thinkpad laptop is unable to connect to the wireless network.",
+            "affected_system": "Lenovo Thinkpad Wi-Fi Adapter",
+            "security_related": false,
+            "requires_escalation": false,
+            "troubleshooting": [
+                "Verify that the physical Wi-Fi switch or function key toggle (typically Fn + F8 on Lenovo Thinkpads) is turned on and airplane mode is disabled.",
+                "Open Device Manager, locate your wireless network adapter under 'Network adapters', right-click to disable it, and then enable it again to reset the hardware.",
+                "Run the Windows Network Troubleshooter by right-clicking the network icon in the system tray and selecting 'Diagnose network problems'."
+            ]
+        },
+        "final_priority": "Medium",
+        "status": "Open",
+        "escalated": false,
+        "requires_manual_review": false,
+        "created_at": "2026-10-23T05:20:54",
+        "updated_at": "2026-10-23T05:20:54"
     }
 ]
