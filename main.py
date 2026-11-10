@@ -10,8 +10,7 @@ from managers.logic_manager import process_ticket
 from managers import data_manager
 from models.ticket import create_ticket
 
-
-def submit_ticket(tickets, io_manager):
+def submit_ticket(tickets, io_manager: IOManager) -> None:
     try:
         user_input = io_manager.collect_ticket_input()
 
