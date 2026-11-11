@@ -93,5 +93,28 @@ print("\nTest 5: invalid AI response")
 print(result)
 assert result["action"] == "REJECT"
 
+# Test 6: AI unavailable with category specific troubleshooting
 
-print("\nAll 5 tests passed!")
+failed_ai_response = ai_response.copy()
+failed_ai_response["ai_failed"] = True
+failed_ai_response["troubleshooting"] = []
+
+ticket = {
+    "title": "Cannot connect to Wi-Fi",
+    "description": "My laptop cannot connect to the internet.",
+    "device": "Laptop",
+    "user_priority": "Medium",
+}
+
+result = logic_manager.process_ticket(ticket, failed_ai_response)
+
+print("\nTest 6: AI unavailable")
+print(result)
+
+assert result["category"] == "Network"
+assert len(result["troubleshooting"]) == 3
+assert result["requires_manual_review"] is True
+assert result["action"] == "MANUAL_REVIEW"
+assert "temporarily unavailable" in result["support_message"]
+
+print("\nAll 6 tests passed!")
