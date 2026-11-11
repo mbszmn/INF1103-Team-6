@@ -108,6 +108,28 @@ class LogicManager:
 
         return result
 
+    def apply_priority_rule(self, ticket, ai_response):
+        """Place critical tickets at the top of the support queue."""
+
+        result = ai_response.copy()
+
+        priority = ticket.get("user_priority", "Medium")
+
+        if priority not in VALID_PRIORITIES:
+            result["requires_manual_review"] = True
+
+            if result.get("action") != "ESCALATE":
+                result["action"] = "MANUAL_REVIEW"
+
+            return result
+
+        result["priority"] = priority
+
+        if priority == "Critical":
+            result["queue_position"] = "TOP"
+
+        return result
+
 
 def validate_ai_response(ai_response):
     """Validate the structure and values of an AI-enriched ticket."""
@@ -168,16 +190,6 @@ def apply_confidence_rule(ai_response):
 
         if result.get("action") != "ESCALATE":
             result["action"] = "MANUAL_REVIEW"
-
-    return result
-
-
-def apply_priority_rule(ai_response):
-    """Place critical tickets at the top of the support queue."""
-    result = ai_response.copy()
-
-    if ai_response["priority"] == "Critical":
-        result["queue_position"] = "TOP"
 
     return result
 
