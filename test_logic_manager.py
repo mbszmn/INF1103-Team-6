@@ -118,3 +118,40 @@ assert result["action"] == "MANUAL_REVIEW"
 assert "temporarily unavailable" in result["support_message"]
 
 print("\nAll 6 tests passed!")
+
+def test_keyword_classifier():
+    logic_manager = LogicManager()
+
+    test_cases = [
+        {
+            "title": "My account has been hacked",
+            "expected": "Security"
+        },
+        {
+            "title": "I cannot connect to Wi-Fi",
+            "expected": "Network"
+        },
+        {
+            "title": "My laptop won't turn on",
+            "expected": "Hardware"
+        },
+        {
+            "title": "I cannot log in",
+            "expected": "Account"
+        },
+        {
+            "title": "Microsoft Word keeps crashing",
+            "expected": "Software"
+        },
+    ]
+
+    for test in test_cases:
+        result = logic_manager.classify_ticket(test)
+
+        assert result == test["expected"], (
+            f"Expected {test['expected']}, got {result}"
+        )
+
+    print("All keyword classifier tests passed!")
+
+test_keyword_classifier()
