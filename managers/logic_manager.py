@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-VALID_CATEGORIES = {
+VALID_CATEGORIES: set[str] = {
     "Network",
     "Hardware",
     "Software",
@@ -9,7 +9,7 @@ VALID_CATEGORIES = {
     "Other",
 }
 
-VALID_PRIORITIES = {
+VALID_PRIORITIES: set[str] = {
     "Low",
     "Medium",
     "High",
@@ -21,7 +21,7 @@ class TicketClassifier(ABC):
     """Abstract base class for ticket classification."""
 
     @abstractmethod
-    def classify(self, ticket):
+    def classify(self, ticket: dict) -> str:
         """Classify a ticket and return its category."""
         pass
 
@@ -29,7 +29,7 @@ class TicketClassifier(ABC):
 class KeywordClassifier(TicketClassifier):
     """Classify tickets using keywords in the ticket details."""
 
-    KEYWORDS = {
+    KEYWORDS: dict[str, list[str]] = {
         "Security": [
             "virus", "phishing", "malware", "suspicious",
             "hacked", "ransomware", "unauthorised access",
@@ -67,8 +67,8 @@ class KeywordClassifier(TicketClassifier):
         ]
     }
 
-    def classify(self, ticket):
-        text = " ".join([
+    def classify(self, ticket: dict) -> str:
+        text: str = " ".join([
             ticket.get("title", ""),
             ticket.get("description", ""),
             ticket.get("device", ""),
@@ -85,17 +85,17 @@ class KeywordClassifier(TicketClassifier):
 class LogicManager:
     """Manage ticket classification and business logic."""
 
-    def __init__(self):
-        self.classifier = KeywordClassifier()
+    def __init__(self) -> None:
+        self.classifier: TicketClassifier = KeywordClassifier()
 
-    def classify_ticket(self, ticket):
+    def classify_ticket(self, ticket: dict) -> str:
         """Classify a ticket using the keyword classifier."""
         return self.classifier.classify(ticket)
 
-    def validate_ai_response(self, ai_response):
+    def validate_ai_response(self, ai_response: dict) -> list[str]:
         """Validate the structure and values of an AI-enriched ticket."""
 
-        required_fields = [
+        required_fields: list[str] = [
             "extracted_hardware",
             "extracted_software",
             "sentiment_score",
@@ -106,7 +106,7 @@ class LogicManager:
         if not isinstance(ai_response, dict):
             return ["AI response must be a dictionary."]
 
-        errors = []
+        errors: list[str] = []
 
         for field in required_fields:
             if field not in ai_response:
@@ -141,12 +141,12 @@ class LogicManager:
 
         return errors
     
-    def apply_security_rule(self, ticket, ai_response):
+    def apply_security_rule(self, ticket: dict, ai_response: dict) -> dict:
         """Escalate tickets classified as security-related."""
 
-        result = ai_response.copy()
+        result: dict = ai_response.copy()
 
-        category = self.classify_ticket(ticket)
+        category: str = self.classify_ticket(ticket)
 
         result["category"] = category
         result["security_related"] = category == "Security"
@@ -157,12 +157,12 @@ class LogicManager:
 
         return result
 
-    def apply_priority_rule(self, ticket, ai_response):
+    def apply_priority_rule(self, ticket: dict, ai_response: dict) -> dict:
         """Place critical tickets at the top of the support queue."""
 
-        result = ai_response.copy()
+        result: dict = ai_response.copy()
 
-        priority = ticket.get("user_priority", "Medium")
+        priority: str = ticket.get("user_priority", "Medium")
 
         if priority not in VALID_PRIORITIES:
             result["requires_manual_review"] = True
@@ -179,14 +179,14 @@ class LogicManager:
 
         return result
     
-    def apply_manual_review_rule(self, ai_response):
+    def apply_manual_review_rule(self, ai_response: dict) -> dict:
         """Send failed or insufficient AI analysis for manual review."""
 
-        result = ai_response.copy()
+        result: dict = ai_response.copy()
 
-        ai_failed = result.get("ai_failed", False)
+        ai_failed: bool = result.get("ai_failed", False)
         sentiment = result.get("sentiment_score", 10)
-        troubleshooting = result.get("troubleshooting", [])
+        troubleshooting: list[str] = result.get("troubleshooting", [])
 
         if (
             ai_failed
@@ -203,10 +203,10 @@ class LogicManager:
 
         return result
 
-    def process_ticket(self, ticket, ai_response):
+    def process_ticket(self, ticket: dict, ai_response: dict) -> dict:
         """Validate AI analysis and apply all business rules."""
 
-        validation_errors = self.validate_ai_response(ai_response)
+        validation_errors: list[str] = self.validate_ai_response(ai_response)
 
         if validation_errors:
             return {
@@ -214,7 +214,7 @@ class LogicManager:
                 "errors": validation_errors,
             }
 
-        result = self.apply_security_rule(ticket, ai_response)
+        result: dict = self.apply_security_rule(ticket, ai_response)
         result = self.apply_priority_rule(ticket, result)
         result = self.apply_manual_review_rule(result)
 
