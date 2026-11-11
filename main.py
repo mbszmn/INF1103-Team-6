@@ -6,11 +6,11 @@ load_dotenv()
 # import the managers
 from managers.io_manager import IOManager
 from managers.ai_manager import analyse_ticket  
-from managers.logic_manager import process_ticket
+from managers.logic_manager import LogicManager
 from managers import data_manager
 from models.ticket import create_ticket
 
-def submit_ticket(tickets, io_manager: IOManager) -> None:
+def submit_ticket(tickets, io_manager: IOManager, logic_manager: LogicManager) -> None:
     try:
         user_input = io_manager.collect_ticket_input()
 
@@ -39,7 +39,7 @@ def submit_ticket(tickets, io_manager: IOManager) -> None:
         )
 
         # Apply business logic rules frm logic_manager
-        processed_result = process_ticket(ai_analysis)
+        processed_result = logic_manager.process_ticket(ticket, ai_analysis)
 
         if processed_result.get("action") == "REJECT":
             io_manager.display_message("ERROR: AI response failed validation rules.")
@@ -55,6 +55,8 @@ def submit_ticket(tickets, io_manager: IOManager) -> None:
 
 def main():
     io_manager = IOManager()
+    logic_manager = LogicManager()
+
     io_manager.show_welcome()
 
     tickets = data_manager.load_tickets()
@@ -62,7 +64,7 @@ def main():
     while True:
         option = io_manager.get_menu_option()
         if option == "1":
-            submit_ticket(tickets, io_manager)
+            submit_ticket(tickets, io_manager, logic_manager)
         elif option == "2":
             data_manager.display_all(tickets)
         elif option == "3":
