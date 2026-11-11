@@ -82,6 +82,17 @@ class KeywordClassifier(TicketClassifier):
         return "Other"
 
 
+class LogicManager:
+    """Manage ticket classification and business logic."""
+
+    def __init__(self):
+        self.classifier = KeywordClassifier()
+
+    def classify_ticket(self, ticket):
+        """Classify a ticket using the keyword classifier."""
+        return self.classifier.classify(ticket)
+
+
 def validate_ai_response(ai_response):
     """Validate the structure and values of an AI-enriched ticket."""
     errors = []
