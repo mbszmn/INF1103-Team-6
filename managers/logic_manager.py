@@ -95,18 +95,19 @@ class LogicManager:
 
 def validate_ai_response(ai_response):
     """Validate the structure and values of an AI-enriched ticket."""
-    errors = []
 
     required_fields = [
-        "category",
-        "priority",
-        "confidence",
+        "extracted_hardware",
+        "extracted_software",
+        "sentiment_score",
         "summary",
-        "affected_system",
-        "security_related",
-        "requires_escalation",
         "troubleshooting",
     ]
+
+    if not isinstance(ai_response, dict):
+        return ["AI response must be a dictionary."]
+
+    errors = []
 
     for field in required_fields:
         if field not in ai_response:
@@ -115,36 +116,29 @@ def validate_ai_response(ai_response):
     if errors:
         return errors
 
-    if ai_response["category"] not in VALID_CATEGORIES:
-        errors.append(
-            f"Invalid category: {ai_response['category']}"
-        )
+    for field in ["extracted_hardware", "extracted_software"]:
+        if not isinstance(ai_response[field], list):
+            errors.append(f"{field} must be a list.")
+        elif not all(isinstance(item, str) for item in ai_response[field]):
+            errors.append(f"{field} must contain only strings.")
 
-    if ai_response["priority"] not in VALID_PRIORITIES:
-        errors.append(
-            f"Invalid priority: {ai_response['priority']}"
-        )
+    sentiment = ai_response["sentiment_score"]
 
-    confidence = ai_response["confidence"]
-    if not isinstance(confidence, (int, float)) or isinstance(confidence, bool):
-        errors.append("Confidence must be a number.")
-    elif not 0 <= confidence <= 1:
-        errors.append("Confidence must be between 0 and 1.")
-
-    if not isinstance(ai_response["security_related"], bool):
-        errors.append("security_related must be True or False.")
-
-    if not isinstance(ai_response["requires_escalation"], bool):
-        errors.append("requires_escalation must be True or False.")
+    if not isinstance(sentiment, int) or isinstance(sentiment, bool):
+        errors.append("Sentiment score must be an integer.")
+    elif not 1 <= sentiment <= 10:
+        errors.append("Sentiment score must be between 1 and 10.")
 
     if not isinstance(ai_response["summary"], str) or not ai_response["summary"].strip():
         errors.append("Summary cannot be empty.")
 
-    if not isinstance(ai_response["affected_system"], str) or not ai_response["affected_system"].strip():
-        errors.append("Affected system cannot be empty.")
-
     if not isinstance(ai_response["troubleshooting"], list):
         errors.append("Troubleshooting must be a list.")
+    elif not all(isinstance(step, str) for step in ai_response["troubleshooting"]):
+        errors.append("Troubleshooting must contain only strings.")
+
+    if "ai_failed" in ai_response and not isinstance(ai_response["ai_failed"], bool):
+        errors.append("ai_failed must be True or False.")
 
     return errors
 
