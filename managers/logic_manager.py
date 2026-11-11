@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+
 VALID_CATEGORIES = {
     "Network",
     "Hardware",
@@ -13,6 +15,15 @@ VALID_PRIORITIES = {
     "High",
     "Critical",
 }
+
+
+class TicketClassifier(ABC):
+    """Abstract base class for ticket classification."""
+
+    @abstractmethod
+    def classify(self, ticket):
+        """Classify a ticket and return its category."""
+        pass
 
 
 def validate_ai_response(ai_response):
