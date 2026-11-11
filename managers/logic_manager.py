@@ -26,6 +26,62 @@ class TicketClassifier(ABC):
         pass
 
 
+class KeywordClassifier(TicketClassifier):
+    """Classify tickets using keywords in the ticket details."""
+
+    KEYWORDS = {
+        "Network": [
+            "wifi", "wi-fi", "internet", "network",
+            "connection", "disconnected", "connectivity",
+            "ethernet", "lan", "router", "hotspot",
+            "vpn", "slow connection", "cannot connect",
+        ],
+
+        "Account": [
+            "password", "login", "log in", "sign in",
+            "account", "locked out", "forgot password",
+            "reset password", "username", "authentication",
+            "mfa", "otp", "verification",
+        ],
+
+        "Hardware": [
+            "laptop", "keyboard", "screen", "monitor",
+            "mouse", "printer", "webcam", "microphone",
+            "speaker", "charger", "battery", "usb",
+            "motherboard", "overheating", "power button",
+        ],
+
+        "Software": [
+            "software", "application", "app", "program",
+            "installation", "install", "update", "crash",
+            "freezing", "not responding", "error message",
+            "microsoft office", "word", "excel",
+            "powerpoint", "browser",
+        ],
+
+        "Security": [
+            "virus", "phishing", "malware", "suspicious",
+            "hacked", "ransomware", "unauthorised access",
+            "data breach", "spam", "malicious link",
+            "compromised account",
+        ],
+    }
+
+    def classify(self, ticket):
+        text = " ".join([
+            ticket.get("title", ""),
+            ticket.get("description", ""),
+            ticket.get("device", ""),
+            ticket.get("error_message", ""),
+        ]).lower()
+
+        for category, keywords in self.KEYWORDS.items():
+            if any(keyword in text for keyword in keywords):
+                return category
+
+        return "Other"
+
+
 def validate_ai_response(ai_response):
     """Validate the structure and values of an AI-enriched ticket."""
     errors = []
