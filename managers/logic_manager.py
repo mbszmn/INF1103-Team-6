@@ -91,6 +91,55 @@ class LogicManager:
     def classify_ticket(self, ticket):
         """Classify a ticket using the keyword classifier."""
         return self.classifier.classify(ticket)
+
+    def validate_ai_response(self, ai_response):
+        """Validate the structure and values of an AI-enriched ticket."""
+
+        required_fields = [
+            "extracted_hardware",
+            "extracted_software",
+            "sentiment_score",
+            "summary",
+            "troubleshooting",
+        ]
+
+        if not isinstance(ai_response, dict):
+            return ["AI response must be a dictionary."]
+
+        errors = []
+
+        for field in required_fields:
+            if field not in ai_response:
+                errors.append(f"Missing required field: {field}")
+
+        if errors:
+            return errors
+
+        for field in ["extracted_hardware", "extracted_software"]:
+            if not isinstance(ai_response[field], list):
+                errors.append(f"{field} must be a list.")
+            elif not all(isinstance(item, str) for item in ai_response[field]):
+                errors.append(f"{field} must contain only strings.")
+
+        sentiment = ai_response["sentiment_score"]
+
+        if not isinstance(sentiment, int) or isinstance(sentiment, bool):
+            errors.append("Sentiment score must be an integer.")
+        elif not 1 <= sentiment <= 10:
+            errors.append("Sentiment score must be between 1 and 10.")
+
+        if not isinstance(ai_response["summary"], str) or not ai_response["summary"].strip():
+            errors.append("Summary cannot be empty.")
+
+        if not isinstance(ai_response["troubleshooting"], list):
+            errors.append("Troubleshooting must be a list.")
+        elif not all(isinstance(step, str) for step in ai_response["troubleshooting"]):
+            errors.append("Troubleshooting must contain only strings.")
+
+        if "ai_failed" in ai_response and not isinstance(ai_response["ai_failed"], bool):
+            errors.append("ai_failed must be True or False.")
+
+        return errors
     
     def apply_security_rule(self, ticket, ai_response):
         """Escalate tickets classified as security-related."""
@@ -149,56 +198,6 @@ class LogicManager:
             result["requires_manual_review"] = False
 
         return result
-
-
-def validate_ai_response(ai_response):
-    """Validate the structure and values of an AI-enriched ticket."""
-
-    required_fields = [
-        "extracted_hardware",
-        "extracted_software",
-        "sentiment_score",
-        "summary",
-        "troubleshooting",
-    ]
-
-    if not isinstance(ai_response, dict):
-        return ["AI response must be a dictionary."]
-
-    errors = []
-
-    for field in required_fields:
-        if field not in ai_response:
-            errors.append(f"Missing required field: {field}")
-
-    if errors:
-        return errors
-
-    for field in ["extracted_hardware", "extracted_software"]:
-        if not isinstance(ai_response[field], list):
-            errors.append(f"{field} must be a list.")
-        elif not all(isinstance(item, str) for item in ai_response[field]):
-            errors.append(f"{field} must contain only strings.")
-
-    sentiment = ai_response["sentiment_score"]
-
-    if not isinstance(sentiment, int) or isinstance(sentiment, bool):
-        errors.append("Sentiment score must be an integer.")
-    elif not 1 <= sentiment <= 10:
-        errors.append("Sentiment score must be between 1 and 10.")
-
-    if not isinstance(ai_response["summary"], str) or not ai_response["summary"].strip():
-        errors.append("Summary cannot be empty.")
-
-    if not isinstance(ai_response["troubleshooting"], list):
-        errors.append("Troubleshooting must be a list.")
-    elif not all(isinstance(step, str) for step in ai_response["troubleshooting"]):
-        errors.append("Troubleshooting must contain only strings.")
-
-    if "ai_failed" in ai_response and not isinstance(ai_response["ai_failed"], bool):
-        errors.append("ai_failed must be True or False.")
-
-    return errors
 
 
 def process_ticket(ai_response):
