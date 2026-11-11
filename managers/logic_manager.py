@@ -188,7 +188,11 @@ class LogicManager:
         sentiment = result.get("sentiment_score", 10)
         troubleshooting = result.get("troubleshooting", [])
 
-        if ai_failed or (sentiment <= 3 and not troubleshooting):
+        if (
+            ai_failed
+            or result.get("requires_manual_review", False)
+            or (sentiment <= 3 and not troubleshooting)
+        ):
             result["requires_manual_review"] = True
 
             if result.get("action") != "ESCALATE":
@@ -199,19 +203,19 @@ class LogicManager:
 
         return result
 
+    def process_ticket(self, ticket, ai_response):
+        """Validate AI analysis and apply all business rules."""
 
-def process_ticket(ai_response):
-    """Validate an AI response and apply all Logic Manager rules."""
-    validation_errors = validate_ai_response(ai_response)
+        validation_errors = self.validate_ai_response(ai_response)
 
-    if validation_errors:
-        return {
-            "action": "REJECT",
-            "errors": validation_errors,
-        }
+        if validation_errors:
+            return {
+                "action": "REJECT",
+                "errors": validation_errors,
+            }
 
-    result = apply_security_rule(ai_response)
-    result = apply_confidence_rule(result)
-    result = apply_priority_rule(result)
+        result = self.apply_security_rule(ticket, ai_response)
+        result = self.apply_priority_rule(ticket, result)
+        result = self.apply_manual_review_rule(result)
 
-    return result
+        return result
