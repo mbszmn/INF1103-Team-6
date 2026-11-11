@@ -129,6 +129,26 @@ class LogicManager:
             result["queue_position"] = "TOP"
 
         return result
+    
+    def apply_manual_review_rule(self, ai_response):
+        """Send failed or insufficient AI analysis for manual review."""
+
+        result = ai_response.copy()
+
+        ai_failed = result.get("ai_failed", False)
+        sentiment = result.get("sentiment_score", 10)
+        troubleshooting = result.get("troubleshooting", [])
+
+        if ai_failed or (sentiment <= 3 and not troubleshooting):
+            result["requires_manual_review"] = True
+
+            if result.get("action") != "ESCALATE":
+                result["action"] = "MANUAL_REVIEW"
+
+        else:
+            result["requires_manual_review"] = False
+
+        return result
 
 
 def validate_ai_response(ai_response):
@@ -179,50 +199,6 @@ def validate_ai_response(ai_response):
         errors.append("ai_failed must be True or False.")
 
     return errors
-
-
-def apply_confidence_rule(ai_response):
-    """Send low-confidence AI results for manual review."""
-    result = ai_response.copy()
-
-    if ai_response["confidence"] < 0.70:
-        result["requires_manual_review"] = True
-
-        if result.get("action") != "ESCALATE":
-            result["action"] = "MANUAL_REVIEW"
-
-    return result
-
-
-def fallback_classification(description):
-    """Classify a ticket using keywords when the AI service is unavailable."""
-    text = description.lower()
-
-    if any(keyword in text for keyword in ["wifi", "internet", "network"]):
-        category = "Network"
-    elif any(keyword in text for keyword in ["password", "login", "account"]):
-        category = "Account"
-    elif any(keyword in text for keyword in ["laptop", "keyboard", "screen"]):
-        category = "Hardware"
-    elif any(keyword in text for keyword in ["software", "application", "program"]):
-        category = "Software"
-    elif any(keyword in text for keyword in ["virus", "phishing", "suspicious"]):
-        category = "Security"
-    else:
-        category = "Other"
-
-    return {
-        "category": category,
-        "priority": "Medium",
-        "confidence": 0.0,
-        "summary": description,
-        "affected_system": "Unknown",
-        "security_related": category == "Security",
-        "requires_escalation": category == "Security",
-        "requires_manual_review": True,
-        "troubleshooting": [],
-        "action": "MANUAL_REVIEW",
-    }
 
 
 def process_ticket(ai_response):
