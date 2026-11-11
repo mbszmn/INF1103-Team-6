@@ -30,6 +30,13 @@ class KeywordClassifier(TicketClassifier):
     """Classify tickets using keywords in the ticket details."""
 
     KEYWORDS = {
+        "Security": [
+            "virus", "phishing", "malware", "suspicious",
+            "hacked", "ransomware", "unauthorised access",
+            "data breach", "spam", "malicious link",
+            "compromised account",
+        ],
+        
         "Network": [
             "wifi", "wi-fi", "internet", "network",
             "connection", "disconnected", "connectivity",
@@ -57,14 +64,7 @@ class KeywordClassifier(TicketClassifier):
             "freezing", "not responding", "error message",
             "microsoft office", "word", "excel",
             "powerpoint", "browser",
-        ],
-
-        "Security": [
-            "virus", "phishing", "malware", "suspicious",
-            "hacked", "ransomware", "unauthorised access",
-            "data breach", "spam", "malicious link",
-            "compromised account",
-        ],
+        ]
     }
 
     def classify(self, ticket):
@@ -91,6 +91,22 @@ class LogicManager:
     def classify_ticket(self, ticket):
         """Classify a ticket using the keyword classifier."""
         return self.classifier.classify(ticket)
+    
+    def apply_security_rule(self, ticket, ai_response):
+        """Escalate tickets classified as security-related."""
+
+        result = ai_response.copy()
+
+        category = self.classify_ticket(ticket)
+
+        result["category"] = category
+        result["security_related"] = category == "Security"
+        result["requires_escalation"] = category == "Security"
+
+        if result["requires_escalation"]:
+            result["action"] = "ESCALATE"
+
+        return result
 
 
 def validate_ai_response(ai_response):
@@ -141,24 +157,6 @@ def validate_ai_response(ai_response):
         errors.append("ai_failed must be True or False.")
 
     return errors
-
-
-def apply_security_rule(ai_response):
-    """Escalate tickets identified as security-related."""
-    result = ai_response.copy()
-
-    if (
-        ai_response["category"] == "Security"
-        and ai_response["security_related"] is True
-    ):
-        result["requires_escalation"] = True
-        result["action"] = "ESCALATE"
-
-    elif ai_response["security_related"] is True:
-        result["requires_escalation"] = True
-        result["action"] = "ESCALATE"
-
-    return result
 
 
 def apply_confidence_rule(ai_response):
