@@ -1,5 +1,4 @@
-#python -m unittest discover -s test -p "test_main.py" -v
-
+#python -m unittest discover -s test_scripts -p "test_main.py" -v
 
 import importlib.util
 import io
