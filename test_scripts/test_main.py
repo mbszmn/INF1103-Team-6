@@ -4,11 +4,15 @@
 import importlib.util
 import io
 import json
+import sys
 from pathlib import Path
 import tempfile
 from types import ModuleType
 import unittest
 from unittest.mock import Mock, patch
+
+project_root = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(project_root))
 
 from managers.io_manager import IOManager
 from managers.logic_manager import LogicManager
