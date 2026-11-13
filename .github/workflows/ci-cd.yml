@@ -116,12 +116,18 @@ jobs:
           load: true
           tags: helpdesk:ci
           cache-from: type=gha
-      - name: Smoke test, app starts with no API key and exits cleanly
+      - name: Smoke test, save a ticket with no API key, then exit
         run: |
-          output=$(printf '7\n' | docker run -i --rm helpdesk:ci)
+          answers='1\nAlex\n2600001\nDell Latitude 5430\nWiFi problem\nCannot connect to the school WiFi\n\n\nHigh\n7\n'
+          output=$(printf "$answers" | docker run -i --rm helpdesk:ci 2>&1)
           echo "$output"
           echo "$output" | grep -q "AI SIT HELPDESK TICKET TRIAGE SYSTEM"
+          echo "$output" | grep -q "successfully processed and saved"
           echo "$output" | grep -q "Thank you for using"
+          if echo "$output" | grep -qE "Could not (save|open|write)"; then
+            echo "The app could not save tickets or open its log file inside the image"
+            exit 1
+          fi
 
   publish:
     name: Publish image to GHCR
@@ -197,10 +203,16 @@ jobs:
         run: |
           image="${{ needs.publish.outputs.image }}@${{ needs.publish.outputs.digest }}"
           docker pull "$image"
-          output=$(printf '7\n' | docker run -i --rm "$image")
+          answers='1\nAlex\n2600001\nDell Latitude 5430\nWiFi problem\nCannot connect to the school WiFi\n\n\nHigh\n7\n'
+          output=$(printf "$answers" | docker run -i --rm "$image" 2>&1)
           echo "$output"
           echo "$output" | grep -q "AI SIT HELPDESK TICKET TRIAGE SYSTEM"
+          echo "$output" | grep -q "successfully processed and saved"
           echo "$output" | grep -q "Thank you for using"
+          if echo "$output" | grep -qE "Could not (save|open|write)"; then
+            echo "The app could not save tickets or open its log file inside the image"
+            exit 1
+          fi
 
   release:
     name: GitHub release
