@@ -13,6 +13,7 @@ class DataManager:
     # keeps the tickets in memory and asks the repository to save after every change
 
     QUEUE_ORDER = {"Critical": 0, "High": 1, "Medium": 2, "Low": 3}
+    REQUIRED_DETAILS = ("username", "student_id", "device", "title", "description")
 
     def __init__(self, repository: TicketRepository):
         # aggregation: the repository is made outside and passed in, so tests can give a fake one
@@ -37,17 +38,23 @@ class DataManager:
 
     def create_ticket(self, details: dict[str, str]) -> Ticket:
         # gives the new ticket the next free id, it is only saved once add() is called
-        return Ticket(
-            ticket_id=self.next_ticket_id(),
-            username=details["username"],
-            student_id=details["student_id"],
-            device=details["device"],
-            title=details["title"],
-            description=details["description"],
-            steps_attempted=details.get("steps_attempted", ""),
-            error_message=details.get("error_message", ""),
-            user_priority=details.get("user_priority", "Medium"),
-        )
+        missing = [field for field in DataManager.REQUIRED_DETAILS if str(details.get(field, "")).strip() == ""]
+        if missing:
+            raise TicketError(f"The ticket is missing: {', '.join(missing)}.")
+        try:
+            return Ticket(
+                ticket_id=self.next_ticket_id(),
+                username=details["username"],
+                student_id=details["student_id"],
+                device=details["device"],
+                title=details["title"],
+                description=details["description"],
+                steps_attempted=details.get("steps_attempted", ""),
+                error_message=details.get("error_message", ""),
+                user_priority=details.get("user_priority", "Medium"),
+            )
+        except ValueError as error:
+            raise TicketError(str(error)) from error
 
     def add(self, ticket: Ticket) -> None:
         if self.__find_or_none(ticket.ticket_id) is not None:

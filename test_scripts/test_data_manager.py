@@ -52,6 +52,19 @@ def test_create_ticket_uses_the_next_id_but_does_not_save(data_manager, ticket_a
     assert data_manager.tickets == []
 
 
+def test_create_ticket_refuses_missing_details(data_manager):
+    with pytest.raises(TicketError, match="missing: student_id, device"):
+        data_manager.create_ticket({"username": "Alex", "title": "WiFi", "description": "Cannot connect"})
+
+
+def test_create_ticket_turns_a_bad_priority_into_a_ticket_error(data_manager, ticket_answers):
+    fields = ["username", "student_id", "device", "title", "description", "steps_attempted",
+              "error_message", "user_priority"]
+    details = dict(zip(fields, ticket_answers, strict=True), user_priority="Urgent")
+    with pytest.raises(TicketError, match="Unknown priority 'Urgent'"):
+        data_manager.create_ticket(details)
+
+
 def test_add_saves_to_the_file_and_refuses_a_duplicate_id(ticket_file, data_manager, make_ticket):
     data_manager.add(make_ticket("0001"))
     assert [ticket.ticket_id for ticket in JsonTicketRepository(ticket_file).load_all()] == ["0001"]
