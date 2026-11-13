@@ -1,3 +1,5 @@
+name: inf1103-team6
+
 services:
   app:
     build:
@@ -21,3 +23,4 @@ services:
 
 volumes:
   helpdesk-data:
+    name: helpdesk-data
