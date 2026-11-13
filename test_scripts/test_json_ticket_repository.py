@@ -11,7 +11,9 @@ TEAM_TICKET_FILE = Path(__file__).resolve().parents[1] / "data" / "tickets.json"
 
 
 def test_missing_file_gives_no_tickets(ticket_file):
-    assert JsonTicketRepository(ticket_file).load_all() == []
+    repository = JsonTicketRepository(ticket_file)
+    assert repository.load_all() == []
+    assert repository.file_path == ticket_file
 
 
 def test_save_then_load_in_a_new_folder(tmp_path, make_ticket):

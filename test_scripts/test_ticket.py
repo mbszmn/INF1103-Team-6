@@ -40,6 +40,13 @@ def test_new_ticket_starts_open_with_one_history_line(make_ticket):
     assert [(change.old_status, change.new_status) for change in ticket.history] == [("", "Open")]
 
 
+def test_ticket_and_history_print_in_a_readable_way(make_ticket):
+    ticket = make_ticket()
+    assert repr(ticket) == "Ticket('0001', 'WiFi problem', Open)"
+    assert ticket.history[0].changed_at == ticket.created_at
+    assert ticket.history[0].describe().endswith("created as Open")
+
+
 def test_fields_cannot_be_changed_from_outside(make_ticket):
     ticket = make_ticket()
     with pytest.raises(AttributeError):
