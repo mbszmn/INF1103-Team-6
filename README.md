@@ -109,7 +109,7 @@ The image then gets the tags `latest`, `2.0.0`, `2.0` and the short commit id.
 | `helpdesk_app.py` | the menu, sends each ticket through the four managers |
 | `managers/io_manager.py`, `ticket/` | IO manager: input, checks on the input, menus |
 | `managers/ai_manager.py` | AI manager: prompt, Gemini call, retries, offline reply |
-| `managers/logic_manager.py` | logic manager: category, security, priority and manual review rules |
+| `managers/logic_manager.py`, `classifiers/` | logic manager: category, security, priority and manual review rules |
 | `managers/data_manager.py`, `storage/`, `filters/`, `exporters/` | data manager: saving, loading, searching and exporting tickets |
 | `models/` | the `Ticket` and `StatusChange` classes |
 | `views/` | turns tickets into text for the screen |
