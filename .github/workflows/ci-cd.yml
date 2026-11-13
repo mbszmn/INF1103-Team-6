@@ -27,9 +27,12 @@ jobs:
           cache: pip
           cache-dependency-path: requirements*.txt
       - run: pip install -r requirements-dev.txt
+        id: install
       - name: Ruff
         run: ruff check --output-format=github .
+      # still runs when ruff fails, so one run shows every problem (the job still fails)
       - name: Mypy
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: mypy .
 
   test:
@@ -108,7 +111,10 @@ jobs:
           cache-to: type=gha,mode=max
       - name: Run every test file inside the container
         run: docker run --rm helpdesk-tests:ci
+      # the app image and smoke test still run when a test fails, so the run shows both results
       - name: Build the app image
+        id: app_image
+        if: ${{ !cancelled() }}
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -117,6 +123,7 @@ jobs:
           tags: helpdesk:ci
           cache-from: type=gha
       - name: Smoke test, save a ticket with no API key, then exit
+        if: ${{ !cancelled() && steps.app_image.outcome == 'success' }}
         run: |
           answers='1\nAlex\n2600001\nDell Latitude 5430\nWiFi problem\nCannot connect to the school WiFi\n\n\nHigh\n7\n'
           output=$(printf "$answers" | docker run -i --rm helpdesk:ci 2>&1)
