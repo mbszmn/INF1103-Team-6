@@ -1,203 +1,111 @@
-import json
-import os
-import datetime
+from pathlib import Path
+from typing import Any
 
-DATA_FOLDER = "data"
-TICKET_FILE = "data/tickets.json"
-CSV_FILE = "data/tickets.csv"
-LINE = "------------------------------------------------"
-
-
-def current_time():
-    # same format as created_at in models/ticket.py
-    return datetime.datetime.now().isoformat(timespec="seconds")
+from errors.storage_error import StorageError
+from errors.ticket_error import TicketError
+from exporters.ticket_exporter import TicketExporter
+from filters.ticket_filter import TicketFilter
+from models.ticket import Ticket
+from storage.ticket_repository import TicketRepository
 
 
-def load_tickets():
-    if not os.path.exists(TICKET_FILE):
-        print(TICKET_FILE, "not found, starting with no tickets.")
-        return []
+class DataManager:
+    # keeps the tickets in memory and asks the repository to save after every change
 
-    try:
-        with open(TICKET_FILE, "r", encoding="utf-8") as file:
-            tickets = json.load(file)
-    except ValueError:
-        tickets = None
+    QUEUE_ORDER = {"Critical": 0, "High": 1, "Medium": 2, "Low": 3}
 
-    # if the file is not a proper json list, keep a copy and start over
-    if type(tickets) != list:
-        backup = TICKET_FILE + ".bak"
-        if os.path.exists(backup):
-            os.remove(backup)
-        os.rename(TICKET_FILE, backup)
-        print(TICKET_FILE, "is damaged, moved it to", backup)
-        return []
+    def __init__(self, repository: TicketRepository):
+        # aggregation: the repository is made outside and passed in, so tests can give a fake one
+        self.__repository: TicketRepository = repository
+        self.__tickets: list[Ticket] = []
 
-    print(TICKET_FILE, "found,", len(tickets), "ticket(s) loaded.")
-    return tickets
+    @property
+    def tickets(self) -> list[Ticket]:
+        return list(self.__tickets)
 
+    def load(self) -> int:
+        self.__tickets = self.__repository.load_all()
+        return len(self.__tickets)
 
-def save_tickets(tickets):
-    try:
-        if not os.path.exists(DATA_FOLDER):
-            os.mkdir(DATA_FOLDER)
-        with open(TICKET_FILE, "w", encoding="utf-8") as file:
-            json.dump(tickets, file, indent=4)
-    except OSError:
-        print("Could not save to", TICKET_FILE)
-        return False
-    return True
+    def next_ticket_id(self) -> str:
+        # biggest id so far + 1, padded to 4 digits like 0001
+        largest = 0
+        for ticket in self.__tickets:
+            if ticket.ticket_id.isascii() and ticket.ticket_id.isdigit():
+                largest = max(largest, int(ticket.ticket_id))
+        return Ticket.normalise_id(str(largest + 1))
 
+    def create_ticket(self, details: dict[str, str]) -> Ticket:
+        # gives the new ticket the next free id, it is only saved once add() is called
+        return Ticket(
+            ticket_id=self.next_ticket_id(),
+            username=details["username"],
+            student_id=details["student_id"],
+            device=details["device"],
+            title=details["title"],
+            description=details["description"],
+            steps_attempted=details.get("steps_attempted", ""),
+            error_message=details.get("error_message", ""),
+            user_priority=details.get("user_priority", "Medium"),
+        )
 
-def generate_ticket_id(tickets):
-    # biggest id so far + 1
-    largest = 0
-    for ticket in tickets:
-        if str(ticket["ticket_id"]).isdigit():
-            number = int(ticket["ticket_id"])
-            if number > largest:
-                largest = number
+    def add(self, ticket: Ticket) -> None:
+        if self.__find_or_none(ticket.ticket_id) is not None:
+            raise TicketError(f"Ticket ID {ticket.ticket_id} already exists.")
+        self.__tickets.append(ticket)
+        try:
+            self.__repository.save_all(self.__tickets)
+        except StorageError:
+            # memory has to match the file, so take it back out
+            self.__tickets.remove(ticket)
+            raise
 
-    # pad to 4 digits like 0001
-    new_id = str(largest + 1)
-    while len(new_id) < 4:
-        new_id = "0" + new_id
-    return new_id
+    def find(self, ticket_id: str) -> Ticket:
+        wanted = Ticket.normalise_id(ticket_id)
+        ticket = self.__find_or_none(wanted)
+        if ticket is None:
+            raise TicketError(f"Ticket {wanted} not found.")
+        return ticket
 
+    def close_ticket(self, ticket_id: str) -> Ticket:
+        ticket = self.find(ticket_id)
+        before = ticket.to_dict()
+        ticket.close()
+        self.__save_or_undo(ticket, before)
+        return ticket
 
-def find_ticket(tickets, ticket_id):
-    for ticket in tickets:
-        if ticket["ticket_id"] == ticket_id:
-            return ticket
-    return None
+    def reopen_ticket(self, ticket_id: str) -> Ticket:
+        ticket = self.find(ticket_id)
+        before = ticket.to_dict()
+        ticket.reopen()
+        self.__save_or_undo(ticket, before)
+        return ticket
 
+    def queue(self) -> list[Ticket]:
+        # open tickets first, critical at the very top, then high, medium and low, oldest first
+        return sorted(self.__tickets, key=self.__queue_position)
 
-def add_ticket(tickets, ticket):
-    # ids must be unique
-    if find_ticket(tickets, ticket["ticket_id"]) != None:
-        print("Ticket ID", ticket["ticket_id"], "already exists.")
-        return False
-    tickets.append(ticket)
-    return save_tickets(tickets)
+    def query(self, ticket_filter: TicketFilter) -> list[Ticket]:
+        # association: the filter is only borrowed for this search, the data manager does not keep it
+        return [ticket for ticket in self.queue() if ticket_filter.matches(ticket)]
 
+    def export(self, exporter: TicketExporter, folder: Path) -> Path:
+        # association: same idea, any exporter can be handed in and it is used the same way
+        return exporter.export(self.queue(), folder)
 
-def attach_ai_result(ticket, ai_result):
-    # keep the ai output inside the ticket so both get saved together
-    ticket["ai_analysis"] = ai_result
-    ticket["final_priority"] = ai_result["priority"]
-    ticket["escalated"] = ai_result["requires_escalation"]
-    # logic manager only adds this one when confidence is low
-    if "requires_manual_review" in ai_result.keys():
-        ticket["requires_manual_review"] = ai_result["requires_manual_review"]
+    def __find_or_none(self, ticket_id: str) -> Ticket | None:
+        for ticket in self.__tickets:
+            if ticket.ticket_id == ticket_id:
+                return ticket
+        return None
 
+    def __save_or_undo(self, ticket: Ticket, before: dict[str, Any]) -> None:
+        try:
+            self.__repository.save_all(self.__tickets)
+        except StorageError:
+            # the file did not change, so put the ticket back the way it was
+            self.__tickets[self.__tickets.index(ticket)] = Ticket.from_dict(before)
+            raise
 
-def update_ticket(tickets, ticket_id, field, new_value):
-    ticket = find_ticket(tickets, ticket_id)
-    if ticket == None:
-        print("Ticket", ticket_id, "not found.")
-        return False
-    if field == "ticket_id":
-        print("Ticket ID cannot be changed.")
-        return False
-    # closed tickets cannot be changed unless reopened
-    if ticket["status"] == "Closed":
-        print("Ticket", ticket_id, "is closed, reopen it first.")
-        return False
-
-    ticket[field] = new_value
-    ticket["updated_at"] = current_time()
-    return save_tickets(tickets)
-
-
-def close_ticket(tickets, ticket_id):
-    closed = update_ticket(tickets, ticket_id, "status", "Closed")
-    if closed:
-        print("Ticket", ticket_id, "closed.")
-    return closed
-
-
-def reopen_ticket(tickets, ticket_id):
-    ticket = find_ticket(tickets, ticket_id)
-    if ticket == None:
-        print("Ticket", ticket_id, "not found.")
-        return False
-    if ticket["status"] != "Closed":
-        print("Ticket", ticket_id, "is not closed.")
-        return False
-
-    ticket["status"] = "Reopened"
-    ticket["updated_at"] = current_time()
-    saved = save_tickets(tickets)
-    if saved:
-        print("Ticket", ticket_id, "reopened.")
-    return saved
-
-
-def get_student_id(ticket):
-    # tickets saved before the student id question existed do not have this key
-    if "student_id" in ticket.keys():
-        return ticket["student_id"]
-    return ""
-
-
-def display_ticket(ticket):
-    print(LINE)
-    print("Ticket ID:", ticket["ticket_id"])
-    print("User:", ticket["username"], "| Student ID:", get_student_id(ticket))
-    print("Device model:", ticket["device"])
-    print("Title:", ticket["title"])
-    print("Description:", ticket["description"])
-    print("Status:", ticket["status"], "| Priority:", ticket["final_priority"])
-    print("Escalated:", ticket["escalated"],
-          "| Manual review:", ticket["requires_manual_review"])
-    if ticket["ai_analysis"] != {}:
-        print("AI Category:", ticket["ai_analysis"]["category"])
-        print("AI Summary:", ticket["ai_analysis"]["summary"])
-        steps = ticket["ai_analysis"]["troubleshooting"]
-        if len(steps) > 0:
-            print("Recommended Troubleshooting Steps:")
-            number = 1
-            for step in steps:
-                print("  " + str(number) + ". " + step)
-                number = number + 1
-    print("Created:", ticket["created_at"], "| Updated:", ticket["updated_at"])
-    print(LINE)
-
-
-def display_all(tickets):
-    print("\nAll Tickets")
-    print(LINE)
-    if len(tickets) == 0:
-        print("No tickets yet.")
-    for ticket in tickets:
-        print("ID: " + ticket["ticket_id"] + " | " + ticket["title"]
-              + " | Priority: " + ticket["final_priority"]
-              + " | Status: " + ticket["status"])
-    print(LINE)
-
-
-def export_tickets_csv(tickets):
-    # csv version for staff to open in excel, text goes in quotes in case it has commas
-    try:
-        with open(CSV_FILE, "w", encoding="utf-8") as file:
-            file.write("ticket_id,username,student_id,device,title,category,"
-                       + "final_priority,status,escalated,created_at\n")
-            for ticket in tickets:
-                category = ""
-                if ticket["ai_analysis"] != {}:
-                    category = ticket["ai_analysis"]["category"]
-                file.write(ticket["ticket_id"] + ","
-                           + '"' + ticket["username"] + '",'
-                           + get_student_id(ticket) + ","
-                           + '"' + ticket["device"] + '",'
-                           + '"' + ticket["title"] + '",'
-                           + category + ","
-                           + ticket["final_priority"] + ","
-                           + ticket["status"] + ","
-                           + str(ticket["escalated"]) + ","
-                           + ticket["created_at"] + "\n")
-    except OSError:
-        print("Could not write", CSV_FILE + ", close it if it is open in excel.")
-        return False
-    print("Tickets exported to", CSV_FILE)
-    return True
+    def __queue_position(self, ticket: Ticket) -> tuple[bool, int, str]:
+        return (ticket.is_closed, DataManager.QUEUE_ORDER.get(ticket.final_priority, 4), ticket.ticket_id)
