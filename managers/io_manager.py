@@ -84,11 +84,13 @@ class IOManager:
             "keyword": input("Word to search for: ").strip(),
         }
 
-    def display_submission_result(self, ticket: dict[str, str]) -> None:
-        analysis = ticket["ai_analysis"]
-        print(f"\nTicket {ticket['ticket_id']} successfully processed and saved!")
-        print(f"Category: {analysis['category']} | Priority: {ticket['final_priority']}")
-        steps = analysis.get("troubleshooting", [])
+    def display_submission_result(self, ticket: dict[str, object]) -> None:
+        analysis = ticket.get("ai_analysis")
+        if not isinstance(analysis, dict):
+            analysis = {}
+        print(f"\nTicket {ticket.get('ticket_id', '?')} successfully processed and saved!")
+        print(f"Category: {analysis.get('category', 'Unassigned')} | Priority: {ticket.get('final_priority', 'Medium')}")
+        steps = analysis.get("troubleshooting") or []
         if steps:
             print("\nSuggested Immediate Troubleshooting Steps:")
             for number, step in enumerate(steps, 1):
