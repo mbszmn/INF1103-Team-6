@@ -1,13 +1,16 @@
 import json
+import os
 from google import genai
 from google.genai import types
+from managers.logic_manager import LogicManager
+
 
 class AIManager:
-    def __init__(self, model: str = "gemini-3.5-flash-lite"):
-        self._model = model
+    def __init__(self, model_name: str = "gemini-3.5-flash-lite"):
+        self._model_name = model_name
         self._client = self._initialise_client()
+        self._logic_manager = LogicManager()
 
-    # Private method to load API, and doesn't crash if API key doesn't exist
     def _initialise_client(self):
         try:
             return genai.Client()
@@ -20,19 +23,26 @@ class AIManager:
         return self._model_name
 
     # Method: analyse_ticket
-    def analyse_ticket(self,
-                       title: str,
-                       description: str,
-                       device: str,
-                       error_message: str, 
-                       steps_attempted: str
-                     ) -> dict:
+    def analyse_ticket(
+        self,
+        title: str,
+        description: str,
+        device: str,
+        error_message: str,
+        steps_attempted: str,
+    ) -> dict:
+        ticket_data = {
+            "title": title,
+            "description": description,
+            "device": device,
+            "error_message": error_message,
+        }
 
         if not self._client:
             print("[AI Manager Notice]: AI is offline. Flagging for logic fallback.")
-            return self._generate_fallback_dict(description)
+            return self._generate_fallback_dict(ticket_data)
 
-    # Retrieve entities frm a submitted ticket
+        # Retrieve entities from a submitted ticket
         prompt = f"""
         You are an automated IT helpdesk triage engine for the Singapore Institute of Technology (SIT).
 
@@ -57,12 +67,6 @@ class AIManager:
         - "sentiment_score": integer from 1 to 10 (1 = extremely frustrated, 10 = neutral/happy)
         - "summary": 1-sentence concise summary
         - "troubleshooting": list of 2-3 specific, actionable troubleshooting steps
-
-        [INSTRUCTIONS FOR TROUBLESHOOTING]:
-        - Provide 2 to 3 highly specific, step-by-step actionable recommendations to resolve or diagnose the issue.
-        - Adapt the steps directly to the user's OS/Device ("{device}").
-        - DO NOT recommend steps the user has already attempted: "{steps_attempted}".
-        - If error details or symptoms are vague, suggest diagnostic checks (e.g., checking Event Viewer, device logs, or network settings).
         """
 
         # Retries/fallback to logic
@@ -74,32 +78,36 @@ class AIManager:
                     contents=prompt,
                     config=types.GenerateContentConfig(
                         response_mime_type="application/json",
-                        temperature=0.1
-                    )
+                        temperature=0.1,
+                    ),
                 )
 
                 parsed_data = json.loads(response.text)
-                
-                required_keys = [
-                    "extracted_hardware", "extracted_software", 
-                    "sentiment_score", "summary", "troubleshooting"
-                ]
-                
-                if all(k in parsed_data for k in required_keys):
+
+                # Use LogicManager to validate structure and data types
+                validation_errors = self._logic_manager.validate_ai_response(parsed_data)
+                if not validation_errors:
+                    parsed_data["ai_failed"] = False
                     return parsed_data
-                    
+                else:
+                    print(f"[AI Manager Warning]: Attempt {attempt + 1} invalid schema: {validation_errors}")
+
             except Exception as e:
                 print(f"[AI Manager Warning]: Attempt {attempt + 1} failed: {e}")
 
-        return self._generate_fallback_dict(description)
+        return self._generate_fallback_dict(ticket_data)
 
-    # Helper to return a safe dictionary if AI doesn't exist or fails
-    def _generate_fallback_dict(self, description: str) -> dict:
+    # Helper to return a safe dictionary using LogicManager if AI fails
+    def _generate_fallback_dict(self, ticket_data: dict) -> dict:
+        category = self._logic_manager.classify_ticket(ticket_data)
+        fallback_steps = self._logic_manager.get_fallback_troubleshooting(category)
+        description = ticket_data.get("description", "")
+
         return {
             "ai_failed": True,
             "extracted_hardware": [],
             "extracted_software": [],
-            "sentiment_score": 5,  # Neutral default
-            "summary": description[:50] + "...",
-            "troubleshooting": ["Please wait for IT support."]
+            "sentiment_score": 5,
+            "summary": description[:50] + "..." if len(description) > 50 else description,
+            "troubleshooting": fallback_steps,
         }
