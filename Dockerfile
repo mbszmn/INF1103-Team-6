@@ -28,7 +28,9 @@ ENV APP_VERSION=${APP_VERSION} \
     HELPDESK_DATA_DIR=/app/data
 RUN useradd --create-home --uid 10001 helpdesk
 COPY . .
-RUN mkdir -p /app/data && chown -R helpdesk:helpdesk /app/data
+# the data folder must be writable, a read only folder on the build machine (OneDrive does this)
+# would otherwise stop tickets and the log from being saved
+RUN mkdir -p /app/data && chown -R helpdesk:helpdesk /app/data && chmod -R u+rwX /app/data
 USER helpdesk
 VOLUME ["/app/data"]
 CMD ["python", "main.py"]
