@@ -8,9 +8,13 @@ from unittest.mock import patch
 import pytest
 
 from errors.storage_error import StorageError
+from exporters.csv_ticket_exporter import CsvTicketExporter
 from managers.io_manager import IOManager
+from managers.logic_manager import LogicManager
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DETAIL_FIELDS = ["username", "student_id", "device", "title", "description", "steps_attempted",
+                 "error_message", "user_priority"]
 
 
 def run_app(app, answers, capsys) -> str:
@@ -160,27 +164,85 @@ def test_ctrl_c_or_closed_input_exits_without_a_traceback(app, capsys, stop):
     assert "Exiting the Helpdesk Ticket Triage System." in output
 
 
-def test_main_starts_and_exits_from_any_folder(tmp_path):
-    # in CI there is no .env, so this also proves the app starts with no API key
+def test_unexpected_bug_is_logged_and_the_app_keeps_running(app, ticket_answers, capsys, caplog, monkeypatch):
+    def broken(self, ticket, ai_response):
+        raise RuntimeError("bug inside the logic manager")
+
+    monkeypatch.setattr(LogicManager, "process_ticket", broken)
+    output = run_app(app, ["1", *ticket_answers, "2", "7"], capsys)
+
+    assert "Sorry, something went wrong with that option." in output
+    assert "All Tickets" in output
+    assert "Thank you for using the Helpdesk Ticket Triage System." in output
+    assert "bug inside the logic manager" in caplog.text
+
+
+def test_input_closing_in_the_middle_of_a_ticket_exits_cleanly(app, capsys):
+    output = run_app(app, ["1", "Alex", "2600001", EOFError], capsys)
+    assert "Exiting the Helpdesk Ticket Triage System." in output
+    assert "Sorry, something went wrong" not in output
+
+
+def test_bad_priority_is_reported_before_the_ai_is_asked(app, fake_ai, ticket_answers, capsys):
+    details = dict(zip(DETAIL_FIELDS, ticket_answers, strict=True), user_priority="Urgent")
+    with patch.object(IOManager, "collect_ticket_input", return_value=details):
+        app.submit_ticket()
+    assert "ERROR: Unknown priority 'Urgent'." in capsys.readouterr().out
+    assert fake_ai.calls == []
+
+
+def test_close_and_reopen_of_a_missing_ticket_say_so(app, capsys):
+    output = run_app(app, ["5", "42", "4", "42", "7"], capsys)
+    assert output.count("Ticket 0042 not found.") == 2
+
+
+def test_one_export_failing_does_not_stop_the_other(app, capsys, monkeypatch):
+    def locked(self, tickets, folder):
+        raise StorageError("Could not write tickets.csv, close it if it is open in another program.")
+
+    monkeypatch.setattr(CsvTicketExporter, "export", locked)
+    output = run_app(app, ["6", "7"], capsys)
+    assert "Could not write tickets.csv" in output
+    assert "Summary report saved to" in output
+
+
+def run_main(working_folder: Path, data_folder: Path) -> subprocess.CompletedProcess:
     env = dict(
         os.environ,
         GEMINI_API_KEY="",
         GOOGLE_API_KEY="",
-        HELPDESK_DATA_DIR=str(tmp_path / "data"),
+        HELPDESK_DATA_DIR=str(data_folder),
         PYTHONIOENCODING="utf-8",
     )
-    result = subprocess.run(
+    return subprocess.run(
         [sys.executable, str(PROJECT_ROOT / "main.py")],
         input="7\n",
         capture_output=True,
         text=True,
         encoding="utf-8",
-        cwd=tmp_path,
+        cwd=working_folder,
         env=env,
         timeout=120,
         check=False,
     )
+
+
+def test_main_starts_and_exits_from_any_folder(tmp_path):
+    # in CI there is no .env, so this also proves the app starts with no API key
+    result = run_main(tmp_path, tmp_path / "data")
     assert result.returncode == 0, result.stderr
     assert "AI SIT HELPDESK TICKET TRIAGE SYSTEM" in result.stdout
     assert "0 ticket(s) loaded." in result.stdout
     assert "Thank you for using the Helpdesk Ticket Triage System." in result.stdout
+    assert (tmp_path / "data" / "helpdesk.log").exists()
+
+
+def test_main_shows_a_damaged_file_warning_and_logs_it(tmp_path):
+    data_folder = tmp_path / "data"
+    data_folder.mkdir()
+    (data_folder / "tickets.json").write_text("{broken", encoding="utf-8")
+    result = run_main(tmp_path, data_folder)
+    assert result.returncode == 0, result.stderr
+    assert "is damaged" in result.stderr
+    assert "is damaged" in (data_folder / "helpdesk.log").read_text(encoding="utf-8")
+    assert (data_folder / "tickets.json.bak").exists()

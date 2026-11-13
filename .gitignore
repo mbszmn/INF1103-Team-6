@@ -8,6 +8,7 @@ data/test_tickets.csv
 # made by the app when it runs
 data/*.bak
 data/*.tmp
+data/*.log
 data/ticket_summary.txt
 
 # made by the test and lint tools

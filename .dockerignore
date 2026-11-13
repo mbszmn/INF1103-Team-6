@@ -20,6 +20,7 @@ htmlcov
 test-results
 data/*.bak
 data/*.tmp
+data/*.log
 data/*.csv
 data/ticket_summary.txt
 data/test_tickets.json

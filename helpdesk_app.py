@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Callable
 from pathlib import Path
 
@@ -10,6 +11,8 @@ from managers.data_manager import DataManager
 from managers.io_manager import IOManager
 from managers.logic_manager import LogicManager
 from views.ticket_formatter import TicketFormatter
+
+logger = logging.getLogger(__name__)
 
 
 class HelpdeskApp:
@@ -67,17 +70,31 @@ class HelpdeskApp:
                 if action is None:
                     self.__io.display_message("Invalid option, please pick 1 to 8.")
                 else:
-                    action()
+                    self.__run_safely(action)
         except (KeyboardInterrupt, EOFError):
             self.__io.display_message("\nExiting the Helpdesk Ticket Triage System.")
+
+    def __run_safely(self, action: Callable[[], None]) -> None:
+        # last line of defence: every expected problem has its own message, this catches the
+        # unexpected ones so one broken feature never closes the app, and the details go to the log
+        try:
+            action()
+        except EOFError:
+            raise
+        except Exception:
+            logger.exception("Menu option failed")
+            self.__io.display_message(
+                "Sorry, something went wrong with that option. "
+                "The details were saved in the log file, please try again."
+            )
 
     def submit_ticket(self) -> None:
         try:
             details = self.__io.collect_ticket_input()
-        except ValueError as error:
+            ticket = self.__data.create_ticket(details)
+        except (ValueError, TicketError) as error:
             self.__io.display_message(f"ERROR: {error}")
             return
-        ticket = self.__data.create_ticket(details)
 
         self.__io.display_message("\nAnalysing ticket with AI...")
         analysis = self.__ai.analyse_ticket(
