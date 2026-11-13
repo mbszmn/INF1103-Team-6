@@ -160,7 +160,8 @@ def test_ctrl_c_or_closed_input_exits_without_a_traceback(app, capsys, stop):
     assert "Exiting the Helpdesk Ticket Triage System." in output
 
 
-def test_main_starts_with_no_api_key_from_any_folder(tmp_path):
+def test_main_starts_and_exits_from_any_folder(tmp_path):
+    # in CI there is no .env, so this also proves the app starts with no API key
     env = dict(
         os.environ,
         GEMINI_API_KEY="",
