@@ -12,7 +12,8 @@ class TicketExporter(ABC):
         path = Path(folder) / self.file_name
         try:
             path.parent.mkdir(parents=True, exist_ok=True)
-            with path.open("w", encoding=self._encoding, newline="") as file:
+            # errors="replace" so one broken character in old data cannot stop the whole export
+            with path.open("w", encoding=self._encoding, errors="replace", newline="") as file:
                 file.write(self._render(tickets))
         except OSError as error:
             raise StorageError(f"Could not write {path}, close it if it is open in another program.") from error

@@ -44,6 +44,11 @@ def test_any_title_comes_back_the_same_from_the_csv(title):
     assert rows[1][4] == title
 
 
+def test_a_broken_character_in_old_data_does_not_stop_the_export(tmp_path, make_ticket):
+    path = CsvTicketExporter().export([make_ticket(title="bad \ud800 text")], tmp_path)
+    assert read_csv(path)[1][4] == "bad ? text"
+
+
 def test_summary_counts_tickets_and_lists_open_critical_ones(tmp_path, make_ticket):
     wifi = make_ticket("0001", user_priority="Medium")
     wifi.attach_analysis({"category": "Network", "priority": "Medium", "requires_manual_review": True})
