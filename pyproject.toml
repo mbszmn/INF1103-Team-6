@@ -13,6 +13,8 @@ addopts = "-ra --strict-markers"
 branch = true
 source = ["."]
 omit = ["test_scripts/*"]
+# also measure main.py when a test starts it as its own process
+patch = ["subprocess"]
 
 [tool.coverage.report]
 show_missing = true
@@ -26,6 +28,8 @@ select = ["E7", "E9", "F", "B", "UP", "SIM"]
 
 [tool.mypy]
 python_version = "3.12"
+# app code only, some tests pass wrong types on purpose to check the validation
+exclude = ["^test_scripts/"]
 explicit_package_bases = true
 check_untyped_defs = true
 warn_unused_ignores = true
