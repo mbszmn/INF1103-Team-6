@@ -1,16 +1,21 @@
 from dotenv import load_dotenv
+import os
 
 # load the api key frm .env file
-load_dotenv()
+load_dotenv(override=True)
+
+if not os.getenv("GEMINI_API_KEY"):
+    print("\n[SYSTEM WARNING]: GEMINI_API_KEY is missing from .env.")
+    print("The system will launch in Offline Logic Fallback Mode.\n")
 
 # import the managers
 from managers.io_manager import IOManager
-from managers.ai_manager import analyse_ticket  
+from managers.ai_manager import AIManager  
 from managers.logic_manager import LogicManager
 from managers import data_manager
 from models.ticket import create_ticket
 
-def submit_ticket(tickets, io_manager: IOManager, logic_manager: LogicManager) -> None:
+def submit_ticket(tickets, io_manager: IOManager, ai_manager: AIManager, logic_manager: LogicManager) -> None:
     try:
         user_input = io_manager.collect_ticket_input()
 
@@ -29,8 +34,7 @@ def submit_ticket(tickets, io_manager: IOManager, logic_manager: LogicManager) -
 
         io_manager.display_message("\nAnalysing ticket with AI...")
 
-        # function call to AI Manager
-        ai_analysis = analyse_ticket(
+        ai_analysis = ai_manager.analyse_ticket(
             title=ticket["title"],
             description=ticket["description"],
             device=ticket["device"],
@@ -56,6 +60,7 @@ def submit_ticket(tickets, io_manager: IOManager, logic_manager: LogicManager) -
 def main():
     io_manager = IOManager()
     logic_manager = LogicManager()
+    ai_manager = AIManager()  
 
     io_manager.show_welcome()
 
@@ -64,7 +69,7 @@ def main():
     while True:
         option = io_manager.get_menu_option()
         if option == "1":
-            submit_ticket(tickets, io_manager, logic_manager)
+            submit_ticket(tickets, io_manager, ai_manager, logic_manager)
         elif option == "2":
             data_manager.display_all(tickets)
         elif option == "3":
@@ -87,7 +92,6 @@ def main():
             break
         else:
             io_manager.display_message("Invalid option, please pick 1 to 7.")
-
 
 if __name__ == "__main__":
     main()
