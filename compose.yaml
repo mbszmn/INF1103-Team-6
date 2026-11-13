@@ -1,0 +1,23 @@
+services:
+  app:
+    build:
+      context: .
+      target: runtime
+    image: inf1103-team6-helpdesk
+    stdin_open: true
+    tty: true
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - helpdesk-data:/app/data
+
+  tests:
+    build:
+      context: .
+      target: test
+    image: inf1103-team6-helpdesk-tests
+    profiles: ["test"]
+
+volumes:
+  helpdesk-data:
