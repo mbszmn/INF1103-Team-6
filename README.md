@@ -76,8 +76,16 @@ docker run -it --rm --env-file .env -v helpdesk-data:/app/data ghcr.io/mbszmn/in
 | Variable | What it does | Default |
 |---|---|---|
 | `GEMINI_API_KEY` | Gemini key for the AI manager | none, app runs in offline mode |
-| `HELPDESK_DATA_DIR` | Folder for `tickets.json` and the exports | `data` next to `main.py` |
+| `HELPDESK_DATA_DIR` | Folder for `tickets.json`, the exports and `helpdesk.log` | `data` next to `main.py` |
 | `APP_VERSION` | Version shown when the app starts, set by the pipeline | `dev` |
+
+## When something goes wrong
+
+The app never just closes on an error. Expected problems get their own message: wrong input, a
+missing or damaged ticket file (a copy is kept as `tickets.json.bak`), a file that is locked by
+another program, no AI key, the AI being down or giving a bad reply. Anything unexpected shows a
+short message, the menu keeps running, and the technical details are written to
+`data/helpdesk.log` for the team to check.
 
 ## CI/CD pipeline
 
