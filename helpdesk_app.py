@@ -30,7 +30,8 @@ class HelpdeskApp:
         export_folder: Path,
         version: str = "dev",
     ):
-        # aggregation: the managers and exporters are made in main.py and passed in
+        # association: the managers and exporters are made in main.py and passed in, the app works with them
+        # but is not made up of them
         self.__io: IOManager = io_manager
         self.__ai: AIManager = ai_manager
         self.__logic: LogicManager = logic_manager

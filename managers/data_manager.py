@@ -16,8 +16,9 @@ class DataManager:
     REQUIRED_DETAILS = ("username", "student_id", "device", "title", "description")
 
     def __init__(self, repository: TicketRepository):
-        # aggregation: the repository is made outside and passed in, so tests can give a fake one
+        # association: the repository is made outside and passed in, so tests can give a fake one
         self.__repository: TicketRepository = repository
+        # aggregation: tickets can live without this manager (loaded from the file or handed in with add())
         self.__tickets: list[Ticket] = []
 
     @property
