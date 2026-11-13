@@ -4,3 +4,20 @@ data/tickets.csv
 data/test_tickets.json
 data/test_tickets.csv
 .vscode/
+
+# made by the app when it runs
+data/*.bak
+data/*.tmp
+data/ticket_summary.txt
+
+# made by the test and lint tools
+.pytest_cache/
+.hypothesis/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+test-results/
+.venv/
