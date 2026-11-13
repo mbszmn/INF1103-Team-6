@@ -65,11 +65,24 @@ class IOManager:
         print("5. Reopen Ticket")
         print("6. Export Tickets to CSV")
         print("7. Exit")
+        print("8. Filter / Search Tickets")
         print("----------------------------")
         return input("Enter option: ").strip()
 
     def get_ticket_id(self, prompt="Enter ticket ID: "):
         return input(prompt).strip()
+
+    def collect_filter_criteria(self) -> dict[str, str]:
+        # a blank answer means "any", only the filled in ones are used to filter
+        print("\nPress Enter to skip a question.")
+        return {
+            "status": input("Status (Open / Closed / Reopened): ").strip(),
+            "priority": input("Priority (Low / Medium / High / Critical): ").strip(),
+            "category": input(
+                "Category (Network / Hardware / Software / Account / Security / Other): "
+            ).strip(),
+            "keyword": input("Word to search for: ").strip(),
+        }
 
     def display_submission_result(self, ticket: dict[str, str]) -> None:
         analysis = ticket["ai_analysis"]
