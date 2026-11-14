@@ -74,7 +74,7 @@ class LogicManager:
         errors: list[str] = []
 
         for field in required_fields:
-            if field not in ai_response.keys():
+            if field not in ai_response:
                 errors.append("Missing required field: " + field)
 
         if errors:
@@ -88,31 +88,31 @@ class LogicManager:
 
         confidence = ai_response["confidence"]
 
-        if type(confidence) != int and type(confidence) != float:
+        if not isinstance(confidence, (int, float)) or isinstance(confidence, bool):
             errors.append("Confidence score must be a number.")
         elif confidence < 0 or confidence > 1:
             errors.append("Confidence score must be between 0 and 1.")
 
-        if type(ai_response["security_related"]) != bool:
+        if not isinstance(ai_response["security_related"], bool):
             errors.append("security_related must be True or False.")
 
-        if type(ai_response["requires_escalation"]) != bool:
+        if not isinstance(ai_response["requires_escalation"], bool):
             errors.append("requires_escalation must be True or False.")
 
-        if type(ai_response["summary"]) != str or ai_response["summary"].strip() == "":
+        if not isinstance(ai_response["summary"], str) or not ai_response["summary"].strip():
             errors.append("Summary cannot be empty.")
 
-        if type(ai_response["affected_system"]) != str or ai_response["affected_system"].strip() == "":
+        if not isinstance(ai_response["affected_system"], str) or not ai_response["affected_system"].strip():
             errors.append("Affected system cannot be empty.")
 
-        if type(ai_response["troubleshooting"]) != list:
+        if not isinstance(ai_response["troubleshooting"], list):
             errors.append("Troubleshooting must be a list.")
         else:
             for step in ai_response["troubleshooting"]:
-                if type(step) != str:
+                if not isinstance(step, str):
                     errors.append("Each troubleshooting step must be text.")
 
-        if "ai_failed" in ai_response.keys() and type(ai_response["ai_failed"]) != bool:
+        if "ai_failed" in ai_response and not isinstance(ai_response["ai_failed"], bool):
             errors.append("ai_failed must be True or False.")
 
         return errors
@@ -175,7 +175,7 @@ class LogicManager:
 
         ai_failed: bool = False
 
-        if "ai_failed" in result.keys():
+        if "ai_failed" in result:
             ai_failed = result["ai_failed"]
 
         confidence = result["confidence"]
@@ -183,7 +183,7 @@ class LogicManager:
         if ai_failed or confidence < 0.70:
             result["requires_manual_review"] = True
 
-            if "action" not in result.keys() or result["action"] != "ESCALATE":
+            if "action" not in result or result["action"] != "ESCALATE":
                 result["action"] = "MANUAL_REVIEW"
         else:
             result["requires_manual_review"] = False
