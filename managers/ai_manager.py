@@ -1,5 +1,7 @@
+from abc import ABC, abstractmethod
 import json
 import logging
+import time
 from google import genai
 from google.genai import types
 from managers.logic_manager import LogicManager
@@ -73,27 +75,128 @@ class AIResponseValidator:
     def validate_schema(self, data: dict) -> bool:
         return isinstance(data, dict) and all(key in data for key in self._required_keys)
 
+# Abstract for AI providers with built-in retry and exponential backoff
+class BaseAIProvider(ABC):
 
-class AIManager:
-    def __init__(self, model_name: str = "gemini-3.5-flash-lite"):
+    def __init__(self, model_name: str):
         self._model_name = model_name
+
+    def get_model_name(self) -> str:
+        return self._model_name
+
+    def is_available(self) -> bool:
+        """Check whether the provider is ready to accept requests."""
+        return True
+
+    def generate_json(
+        self,
+        prompt: str,
+        validator: AIResponseValidator,
+        max_retries: int = 3,
+        base_delay: float = 1.0,
+    ) -> dict | None:
+        # Execute API call with retries, exponential backoff, and schema validation
+        for attempt in range(max_retries):
+            try:
+                raw_response = self._call_api(prompt)
+                parsed_data = json.loads(raw_response)
+
+                if validator.validate_schema(parsed_data):
+                    return parsed_data
+
+                logger.warning(
+                    "Attempt %d/%d returned invalid schema (missing required keys).",
+                    attempt + 1,
+                    max_retries,
+                )
+            except Exception as e:
+                logger.warning("Attempt %d/%d failed: %s", attempt + 1, max_retries, e)
+
+            if attempt < max_retries - 1:
+                delay = base_delay * (2 ** attempt)
+                logger.info("Retrying in %.1f seconds...", delay)
+                time.sleep(delay)
+
+        return None
+
+    @abstractmethod
+    def _call_api(self, prompt: str) -> str:
+        # Send prompt to the underlying AI service and return raw JSON text
+
+
+class GeminiProvider(BaseAIProvider):
+    # Concrete AI provider backed by Google GenAI SDK
+
+    def __init__(self, model_name: str = "gemini-3.5-flash-lite"):
+        super().__init__(model_name)
         self._client = self._initialise_client()
-        self._prompt_builder = PromptBuilder()
-        self._validator = AIResponseValidator()
-        self._logic_manager = LogicManager()
 
     def _initialise_client(self):
         try:
             return genai.Client()
         except Exception as e:
-            logger.warning("Could not initialize AI client (Missing API Key): %s", e)
+            logger.warning("Could not initialize Gemini client (Missing API Key): %s", e)
             return None
 
-    # getter for model
-    def get_model_name(self) -> str:
-        return self._model_name
+    def is_available(self) -> bool:
+        return self._client is not None
 
-    # method: analyse_ticket
+    def _call_api(self, prompt: str) -> str:
+        if not self._client:
+            raise RuntimeError("Gemini client is not initialized.")
+
+        response = self._client.models.generate_content(
+            model=self._model_name,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                temperature=0.2,
+                tools=[],
+            ),
+        )
+        return response.text
+
+
+class MockAIProvider(BaseAIProvider):
+    # Offline mock AI provider for deterministic unit testing and offline demos
+
+    def __init__(self, canned_response: dict | None = None, model_name: str = "mock-ai-model"):
+        super().__init__(model_name)
+        self._canned_response = canned_response or {
+            "category": "Network",
+            "priority": "Medium",
+            "confidence": 0.92,
+            "summary": "Unable to connect to campus Wi-Fi network.",
+            "affected_system": "SIT Wi-Fi",
+            "security_related": False,
+            "requires_escalation": False,
+            "troubleshooting": [
+                "Forget the SIT Wi-Fi network and reconnect using your SIT credentials.",
+                "Restart your wireless network adapter and test connectivity.",
+            ],
+        }
+
+    def _call_api(self, prompt: str) -> str:
+        return json.dumps(self._canned_response)
+
+
+class AIManager:
+    # Coordinates prompt building, AI provider calls, validation, and keyword fallback
+
+    def __init__(
+        self,
+        provider: BaseAIProvider | None = None,
+        logic_manager: LogicManager | None = None,
+        model_name: str = "gemini-3.5-flash-lite",
+    ):
+        self._provider = provider if provider is not None else GeminiProvider(model_name=model_name)
+        self._logic_manager = logic_manager if logic_manager is not None else LogicManager()
+        self._prompt_builder = PromptBuilder()
+        self._validator = AIResponseValidator()
+
+    def get_model_name(self) -> str:
+        return self._provider.get_model_name()
+
     def analyse_ticket(
         self,
         title: str,
@@ -110,37 +213,17 @@ class AIManager:
             "steps_attempted": steps_attempted,
         }
 
-        if not self._client:
-            logger.warning("AI is offline. Falling back to LogicManager rules.")
+        if not self._provider.is_available():
+            logger.warning("AI provider is offline. Falling back to LogicManager rules.")
             return self._generate_fallback_dict(ticket_data)
 
         prompt = self._prompt_builder.build_triage_prompt(ticket_data)
+        parsed_data = self._provider.generate_json(prompt, validator=self._validator)
 
-        # try 3 times before fallback to logic manager
-        max_retries = 3
-        for attempt in range(max_retries):
-            try:
-                response = self._client.models.generate_content(
-                    model=self._model_name,
-                    contents=prompt,
-                    config=types.GenerateContentConfig(
-                        response_mime_type="application/json",
-                        temperature=0.2,
-                        tools=[],
-                    ),
-                )
+        if parsed_data is not None:
+            return parsed_data
 
-                parsed_data = json.loads(response.text)
-
-                if self._validator.validate_schema(parsed_data):
-                    return parsed_data
-
-                logger.warning("Attempt %d invalid schema: missing required keys.", attempt + 1)
-
-            except Exception as e:
-                logger.warning("Attempt %d failed: %s", attempt + 1, e)
-
-        logger.error("AI service unavailable after %d attempts. Using fallback classification.", max_retries)
+        logger.error("AI service unavailable after retries. Using fallback classification.")
         return self._generate_fallback_dict(ticket_data)
 
     # to return a safe dictionary using LogicManager if AI fails
