@@ -1,6 +1,7 @@
 from filters.all_of_filter import AllOfFilter
 from filters.field_filter import FieldFilter
 from filters.keyword_filter import KeywordFilter
+from filters.overdue_filter import OverdueFilter
 from filters.ticket_filter import TicketFilter
 from managers.logic_manager import VALID_CATEGORIES
 from models.ticket import Ticket
@@ -13,6 +14,8 @@ class TicketFilterFactory:
     def create(criterion: str, value: str) -> TicketFilter:
         value = value.strip()
         if criterion == "status":
+            if value.lower() == "overdue":
+                return OverdueFilter()
             return FieldFilter("status", TicketFilterFactory.__pick(value, Ticket.STATUSES, "Status"))
         if criterion == "priority":
             return FieldFilter("final_priority", TicketFilterFactory.__pick(value, Ticket.PRIORITIES, "Priority"))

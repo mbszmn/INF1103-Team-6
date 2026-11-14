@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from filters.overdue_or_critical_filter import OverdueOrCriticalFilter
+from filters.overdue_filter import OverdueFilter
 from filters.ticket_filter_factory import TicketFilterFactory
 from managers.data_manager import DataManager
 from models.ticket import Ticket
@@ -45,22 +45,28 @@ def test_closed_ticket_is_not_flagged_overdue():
     assert closed_old_ticket.is_overdue is False
 
 
-def test_overdue_or_critical_filter_and_factory():
+def test_overdue_filter_and_factory():
     created_filter = TicketFilterFactory.create("status", "overdue")
-    assert isinstance(created_filter, OverdueOrCriticalFilter)
+    assert isinstance(created_filter, OverdueFilter)
 
-    ticket_filter = TicketFilterFactory.from_answers({"status": "overdue"})
-    assert "overdue" in ticket_filter.describe().lower()
+    overdue_only = TicketFilterFactory.from_answers({"status": "overdue"})
+    assert "overdue" in overdue_only.describe().lower()
 
     fresh_medium = _make_ticket("0001", hours_ago=5, priority="Medium")
     overdue_low = _make_ticket("0002", hours_ago=30, priority="Low")
     fresh_critical = _make_ticket("0003", hours_ago=1, priority="Critical")
-    closed_overdue_critical = _make_ticket("0004", hours_ago=50, priority="Critical", closed=True)
+    closed_overdue = _make_ticket("0004", hours_ago=50, priority="Critical", closed=True)
 
-    assert ticket_filter.matches(fresh_medium) is False
-    assert ticket_filter.matches(overdue_low) is True
-    assert ticket_filter.matches(fresh_critical) is True
-    assert ticket_filter.matches(closed_overdue_critical) is False
+    assert overdue_only.matches(fresh_medium) is False
+    assert overdue_only.matches(overdue_low) is True
+    assert overdue_only.matches(fresh_critical) is False
+    assert overdue_only.matches(closed_overdue) is False
+
+    # Combining overdue status + Critical priority via AllOfFilter
+    overdue_and_critical = TicketFilterFactory.from_answers({"status": "overdue", "priority": "Critical"})
+    overdue_critical = _make_ticket("0005", hours_ago=28, priority="Critical")
+    assert overdue_and_critical.matches(overdue_low) is False
+    assert overdue_and_critical.matches(overdue_critical) is True
 
 
 def test_data_manager_persists_overdue_flag_on_load_and_formats_badge(tmp_path: Path):
@@ -73,11 +79,11 @@ def test_data_manager_persists_overdue_flag_on_load_and_formats_badge(tmp_path: 
     manager = DataManager(repo)
     assert manager.load() == 3
 
-    results = manager.query(OverdueOrCriticalFilter())
-    assert [t.ticket_id for t in results] == ["0002", "0001"]
+    results = manager.query(OverdueFilter())
+    assert [t.ticket_id for t in results] == ["0001"]
     assert manager.find("0001").to_dict()["overdue"] is True
 
     formatter = TicketFormatter()
-    list_output = formatter.format_list(results, "Overdue or Critical")
+    list_output = formatter.format_list(results, "Overdue Tickets")
     assert "[OVERDUE >24H]" in list_output
     assert "SLA Status: OVERDUE (>24h unresolved)" in formatter.format_detail(manager.find("0001"))
