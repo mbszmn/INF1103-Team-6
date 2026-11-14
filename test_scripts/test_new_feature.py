@@ -46,8 +46,11 @@ def test_closed_ticket_is_not_flagged_overdue():
 
 
 def test_overdue_or_critical_filter_and_factory():
+    created_filter = TicketFilterFactory.create("status", "overdue")
+    assert isinstance(created_filter, OverdueOrCriticalFilter)
+
     ticket_filter = TicketFilterFactory.from_answers({"status": "overdue"})
-    assert isinstance(OverdueOrCriticalFilter(), type(ticket_filter._filters[0]))  # type: ignore[attr-defined]
+    assert "overdue" in ticket_filter.describe().lower()
 
     fresh_medium = _make_ticket("0001", hours_ago=5, priority="Medium")
     overdue_low = _make_ticket("0002", hours_ago=30, priority="Low")
