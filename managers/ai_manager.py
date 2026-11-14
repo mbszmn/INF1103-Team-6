@@ -1,11 +1,24 @@
 import json
-import os
+import logging
 from google import genai
 from google.genai import types
 from managers.logic_manager import LogicManager
 
+logger = logging.getLogger(__name__)
+
 
 class AIManager:
+    REQUIRED_KEYS = [
+        "category",
+        "priority",
+        "confidence",
+        "summary",
+        "affected_system",
+        "security_related",
+        "requires_escalation",
+        "troubleshooting",
+    ]
+
     def __init__(self, model_name: str = "gemini-3.5-flash-lite"):
         self._model_name = model_name
         self._client = self._initialise_client()
@@ -14,35 +27,36 @@ class AIManager:
     def _initialise_client(self):
         try:
             return genai.Client()
-        except Exception:
-            print("\n[AI Manager Warning]: Could not initialize AI (Missing API Key).")
+        except Exception as e:
+            logger.warning("Could not initialize AI client (Missing API Key): %s", e)
             return None
 
-    # Getter for model
+    # getter for model
     def get_model_name(self) -> str:
         return self._model_name
 
-    # Method: analyse_ticket
+    # method: analyse_ticket
     def analyse_ticket(
         self,
         title: str,
         description: str,
-        device: str,
-        error_message: str,
-        steps_attempted: str,
+        device: str = "Unknown",
+        error_message: str = "",
+        steps_attempted: str = "",
     ) -> dict:
         ticket_data = {
             "title": title,
             "description": description,
             "device": device,
             "error_message": error_message,
+            "steps_attempted": steps_attempted,
         }
 
         if not self._client:
-            print("[AI Manager Notice]: AI is offline. Flagging for logic fallback.")
+            logger.warning("AI is offline. Falling back to LogicManager rules.")
             return self._generate_fallback_dict(ticket_data)
 
-        # Retrieve entities from a submitted ticket
+        # retrieve entities frm a submitted tix
         prompt = f"""
         You are an automated IT helpdesk triage engine for the Singapore Institute of Technology (SIT).
 
@@ -62,14 +76,17 @@ class AIManager:
         - If error details or symptoms are vague, suggest diagnostic checks (e.g., checking Event Viewer, device logs, or network settings).
 
         Analyze the ticket and return a valid JSON object ONLY containing:
-        - "extracted_hardware": list of strings (e.g., ["router", "cable", "screen"], empty if none)
-        - "extracted_software": list of strings (e.g., ["excel", "windows", "firewall"], empty if none)
-        - "sentiment_score": integer from 1 to 10 (1 = extremely frustrated, 10 = neutral/happy)
+        - "category": "Network" | "Hardware" | "Software" | "Account" | "Security" | "Other"
+        - "priority": "Low" | "Medium" | "High" | "Critical"
+        - "confidence": float between 0.0 and 1.0
         - "summary": 1-sentence concise summary
-        - "troubleshooting": list of 2-3 specific, actionable troubleshooting steps
+        - "affected_system": specific system, software, or hardware component
+        - "security_related": boolean (true if malware, phishing, credentials, or unauthorized access)
+        - "requires_escalation": boolean (true if immediate human specialist intervention is needed)
+        - "troubleshooting": list of strings (2-3 concrete actionable troubleshooting steps)
         """
 
-        # Retries/fallback to logic
+        # retries/fallback to logic manager
         max_retries = 3
         for attempt in range(max_retries):
             try:
@@ -78,36 +95,39 @@ class AIManager:
                     contents=prompt,
                     config=types.GenerateContentConfig(
                         response_mime_type="application/json",
-                        temperature=0.1,
+                        temperature=0.2,
+                        tools=[],
                     ),
                 )
 
                 parsed_data = json.loads(response.text)
 
-                # Use LogicManager to validate structure and data types
-                validation_errors = self._logic_manager.validate_ai_response(parsed_data)
-                if not validation_errors:
-                    parsed_data["ai_failed"] = False
+                if isinstance(parsed_data, dict) and all(
+                    k in parsed_data for k in self.REQUIRED_KEYS
+                ):
                     return parsed_data
-                else:
-                    print(f"[AI Manager Warning]: Attempt {attempt + 1} invalid schema: {validation_errors}")
+
+                logger.warning("Attempt %d invalid schema: missing required keys.", attempt + 1)
 
             except Exception as e:
-                print(f"[AI Manager Warning]: Attempt {attempt + 1} failed: {e}")
+                logger.warning("Attempt %d failed: %s", attempt + 1, e)
 
+        logger.error("AI service unavailable after %d attempts. Using fallback classification.", max_retries)
         return self._generate_fallback_dict(ticket_data)
 
-    # Helper to return a safe dictionary using LogicManager if AI fails
+    # to return a safe dictionary using LogicManager if AI fails
     def _generate_fallback_dict(self, ticket_data: dict) -> dict:
         category = self._logic_manager.classify_ticket(ticket_data)
         fallback_steps = self._logic_manager.get_fallback_troubleshooting(category)
         description = ticket_data.get("description", "")
 
         return {
-            "ai_failed": True,
-            "extracted_hardware": [],
-            "extracted_software": [],
-            "sentiment_score": 5,
-            "summary": description[:50] + "..." if len(description) > 50 else description,
+            "category": category,
+            "priority": "Medium",
+            "confidence": 0.0,
+            "summary": description,
+            "affected_system": "Unknown",
+            "security_related": category == "Security",
+            "requires_escalation": category == "Security",
             "troubleshooting": fallback_steps,
         }
