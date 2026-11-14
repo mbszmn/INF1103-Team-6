@@ -116,7 +116,7 @@ The image then gets the tags `latest`, `2.0.0`, `2.0` and the short commit id.
 | `main.py` | builds all the objects and starts the app |
 | `helpdesk_app.py` | the menu, sends each ticket through the four managers |
 | `managers/io_manager.py`, `ticket/` | IO manager: input, checks on the input, menus |
-| `managers/ai_manager.py` | AI manager: prompt, Gemini call, retries, offline reply |
+| `managers/ai_manager/` | AI manager: builds the prompt, calls Gemini with retries, checks the reply, and gives an offline reply when the AI cannot be used |
 | `managers/logic_manager.py`, `classifiers/` | logic manager: category, security, priority and manual review rules |
 | `managers/data_manager.py`, `storage/`, `filters/`, `exporters/` | data manager: saving, loading, searching and exporting tickets |
 | `models/` | the `Ticket` and `StatusChange` classes |
@@ -125,5 +125,6 @@ The image then gets the tags `latest`, `2.0.0`, `2.0` and the short commit id.
 | `test_scripts/` | all the automated tests |
 | `data/tickets.json` | saved tickets |
 
-Menu option 8 filters tickets by status, priority, category and a search word. Option 6 writes
+Menu option 8 filters tickets by status, priority, category and a search word. Typing overdue as
+the status shows open tickets that are older than 24 hours. Option 6 writes
 `data/tickets.csv` for Excel and `data/ticket_summary.txt` with counts and the urgent tickets.
