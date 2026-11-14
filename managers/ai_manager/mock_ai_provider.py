@@ -1,5 +1,5 @@
 import json
-from managers.base_ai_provider import BaseAIProvider
+from managers.ai_manager.base_ai_provider import BaseAIProvider
 
 
 class MockAIProvider(BaseAIProvider):

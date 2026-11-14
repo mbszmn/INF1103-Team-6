@@ -1,7 +1,7 @@
 import logging
 from google import genai
 from google.genai import types
-from managers.base_ai_provider import BaseAIProvider
+from managers.ai_manager.base_ai_provider import BaseAIProvider
 
 logger = logging.getLogger(__name__)
 logging.getLogger("google.genai").setLevel(logging.ERROR)

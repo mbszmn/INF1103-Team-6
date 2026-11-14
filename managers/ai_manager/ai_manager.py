@@ -1,10 +1,9 @@
 import logging
-from managers.ai_response_validator import AIResponseValidator
-from managers.base_ai_provider import BaseAIProvider
-from managers.gemini_provider import GeminiProvider
+from managers.ai_manager.ai_response_validator import AIResponseValidator
+from managers.ai_manager.base_ai_provider import BaseAIProvider
+from managers.ai_manager.gemini_provider import GeminiProvider
+from managers.ai_manager.prompt_builder import PromptBuilder
 from managers.logic_manager import LogicManager
-from managers.mock_ai_provider import MockAIProvider
-from managers.prompt_builder import PromptBuilder
 
 __all__ = [
     "AIManager",

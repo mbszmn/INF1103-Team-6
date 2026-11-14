@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import json
 import logging
 import time
-from managers.ai_response_validator import AIResponseValidator
+from managers.ai_manager.ai_response_validator import AIResponseValidator
 
 logger = logging.getLogger(__name__)
 
