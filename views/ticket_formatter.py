@@ -26,6 +26,14 @@ class TicketFormatter:
         analysis = ticket.ai_analysis
         if analysis:
             lines.append(f"AI Category: {ticket.category}")
+            # the ai saves how sure it is as 0 to 1, so 0.85 shows as 85%
+            confidence = analysis.get("confidence")
+            if isinstance(confidence, (int, float)) and not isinstance(confidence, bool) and 0 <= confidence <= 1:
+                note = " (AI was not available, keyword result)" if analysis.get("ai_failed") is True else ""
+                lines.append(f"AI Confidence: {confidence:.0%}{note}")
+            affected = analysis.get("affected_system")
+            if isinstance(affected, str) and affected.strip() != "":
+                lines.append(f"Affected system: {affected}")
             summary = analysis.get("summary")
             if isinstance(summary, str) and summary != "":
                 lines.append(f"AI Summary: {summary}")
