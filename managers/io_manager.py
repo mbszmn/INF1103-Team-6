@@ -76,7 +76,7 @@ class IOManager:
         # a blank answer means "any", only the filled in ones are used to filter
         print("\nPress Enter to skip a question.")
         return {
-            "status": input("Status (Open / Closed / Reopened): ").strip(),
+            "status": input("Status (Open / Closed / Reopened / Overdue): ").strip(),
             "priority": input("Priority (Low / Medium / High / Critical): ").strip(),
             "category": input(
                 "Category (Network / Hardware / Software / Account / Security / Other): "

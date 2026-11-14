@@ -20,6 +20,9 @@ class TicketFormatter:
             f"Status: {ticket.status} | Priority: {ticket.final_priority}",
             f"Escalated: {ticket.escalated} | Manual review: {ticket.requires_manual_review}",
         ]
+        # open for more than 24 hours without being closed
+        if ticket.is_overdue:
+            lines.append("SLA Status: OVERDUE (>24h unresolved)")
         analysis = ticket.ai_analysis
         if analysis:
             lines.append(f"AI Category: {ticket.category}")
@@ -56,6 +59,8 @@ class TicketFormatter:
             )
             if ticket.final_priority == "Critical" and not ticket.is_closed:
                 line = "TOP | " + line
+            if ticket.is_overdue:
+                line += " | [OVERDUE >24H]"
             lines.append(line)
         lines.append(TicketFormatter.LINE)
         return "\n".join(lines)

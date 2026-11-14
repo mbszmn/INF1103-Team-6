@@ -56,11 +56,7 @@ class KeywordClassifier(TicketClassifier):
     def has_keyword(self, text: str, keywords: list[str]) -> bool:
         """Check whether the text contains any of the given keywords."""
 
-        for keyword in keywords:
-            if keyword in text:
-                return True
-
-        return False
+        return any(keyword in text for keyword in keywords)
 
     def classify(self, ticket: dict) -> str:
         """Classify a ticket using keywords in the ticket details."""
