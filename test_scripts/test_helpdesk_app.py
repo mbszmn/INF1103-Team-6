@@ -61,12 +61,28 @@ def test_with_no_ai_the_ticket_is_still_saved_with_general_steps(
     assert "will be checked by IT support staff" in output
 
 
-def test_security_ticket_is_escalated(app, tmp_path, ticket_answers, capsys):
+def test_security_ticket_is_escalated(app, fake_ai, tmp_path, ticket_answers, capsys):
+    # the AI decides the category now, so the fake AI says this one is a security problem
+    fake_ai.reply.update({"category": "Security", "security_related": True, "requires_escalation": True})
     ticket_answers[3] = "Clicked a phishing link"
     output = run_app(app, ["1", *ticket_answers, "7"], capsys)
 
     [ticket] = saved_tickets(tmp_path)
     assert ticket["escalated"] is True
+    assert ticket["ai_analysis"]["category"] == "Security"
+    assert "escalated to the IT security team" in output
+
+
+def test_with_no_ai_a_phishing_ticket_is_still_escalated_by_the_keywords(
+    app, fake_ai, offline_reply, tmp_path, ticket_answers, capsys
+):
+    fake_ai.reply = offline_reply
+    ticket_answers[3] = "Clicked a phishing link"
+    output = run_app(app, ["1", *ticket_answers, "7"], capsys)
+
+    [ticket] = saved_tickets(tmp_path)
+    assert ticket["escalated"] is True
+    assert ticket["requires_manual_review"] is True
     assert ticket["ai_analysis"]["category"] == "Security"
     assert "escalated to the IT security team" in output
 
