@@ -117,3 +117,10 @@ class DataManager:
 
     def __queue_position(self, ticket: Ticket) -> tuple[bool, int, str]:
         return (ticket.is_closed, DataManager.QUEUE_ORDER.get(ticket.final_priority, 4), ticket.ticket_id)
+
+    # tickets are checked once at startup and saved only if any ticket newly crossed 24h
+    def load(self) -> int:
+        self.__tickets = self.__repository.load_all()
+        if any(ticket.refresh_overdue_status() for ticket in self.__tickets):
+            self.__repository.save_all(self.__tickets)
+        return len(self.__tickets)
