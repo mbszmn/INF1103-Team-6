@@ -51,6 +51,28 @@ def test_detail_skips_broken_ai_values_instead_of_crashing(make_ticket):
     assert "AI Summary" not in text
 
 
+def test_detail_shows_how_sure_the_ai_was_and_the_affected_system(make_ticket):
+    ticket = make_ticket("0001")
+    ticket.attach_analysis({"category": "Network", "confidence": 0.85, "affected_system": "Campus WiFi"})
+    text = TicketFormatter().format_detail(ticket)
+    assert "AI Confidence: 85%\n" in text
+    assert "Affected system: Campus WiFi" in text
+
+    # with no ai the keyword fallback saves confidence 0, so staff are told why
+    offline = make_ticket("0002")
+    offline.attach_analysis({"category": "Network", "confidence": 0.0, "ai_failed": True, "affected_system": "Unknown"})
+    assert "AI Confidence: 0% (AI was not available, keyword result)" in TicketFormatter().format_detail(offline)
+
+
+def test_detail_skips_a_confidence_that_is_not_between_0_and_1(make_ticket):
+    for bad in [85, -0.5, "high", True, None]:
+        ticket = make_ticket()
+        ticket.attach_analysis({"category": "Other", "confidence": bad, "affected_system": "  "})
+        text = TicketFormatter().format_detail(ticket)
+        assert "AI Confidence" not in text
+        assert "Affected system" not in text
+
+
 def test_list_marks_open_critical_tickets_as_top_of_the_queue(make_ticket):
     urgent = make_ticket("0001", user_priority="Critical")
     done = make_ticket("0002", user_priority="Critical")
