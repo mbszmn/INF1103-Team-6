@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any
 
 from errors.ticket_error import TicketError
@@ -42,6 +42,7 @@ class Ticket:
         self.__final_priority: str = user_priority
         self.__escalated: bool = False
         self.__requires_manual_review: bool = False
+        self.__overdue: bool = False
         self.__created_at: str = now
         self.__updated_at: str = now
         # composition: the ticket makes its own history and the history goes when the ticket goes
@@ -130,6 +131,23 @@ class Ticket:
     def is_closed(self) -> bool:
         return self.__status == "Closed"
 
+    @property
+    def is_overdue(self) -> bool:
+        return self.__overdue
+    
+    def refresh_overdue_status(self, hours: int = 24, now: datetime | None = None) -> bool:
+        # Evaluate and store whether an unresolved ticket has exceeded the rule
+        if self.is_closed:
+            self.__overdue = False
+            return False
+        current = now if now is not None else datetime.now()
+        created = datetime.fromisoformat(self.__created_at)
+        was_overdue = self.__overdue
+        self.__overdue = (current - created) > timedelta(hours=hours)
+        if self.__overdue and not was_overdue:
+            self.__updated_at = Ticket.__now()
+        return self.__overdue
+    
     def attach_analysis(self, analysis: dict[str, object]) -> None:
         # keep the checked ai + logic result inside the ticket so both get saved together
         if self.is_closed:
@@ -145,12 +163,14 @@ class Ticket:
     def close(self) -> None:
         if self.is_closed:
             raise TicketError(f"Ticket {self.__ticket_id} is already closed.")
+        self.__overdue = False
         self.__change_status("Closed")
 
     def reopen(self) -> None:
         if not self.is_closed:
             raise TicketError(f"Ticket {self.__ticket_id} is not closed.")
         self.__change_status("Reopened")
+        self.refresh_overdue_status()
 
     def to_dict(self) -> dict[str, Any]:
         # a plain json record, the same keys phase 1 saved plus the history list
@@ -169,6 +189,7 @@ class Ticket:
             "status": self.__status,
             "escalated": self.__escalated,
             "requires_manual_review": self.__requires_manual_review,
+            "overdue": self.__overdue,
             "created_at": self.__created_at,
             "updated_at": self.__updated_at,
             "history": [change.to_dict() for change in self.__history],
@@ -206,6 +227,8 @@ class Ticket:
             ticket.__final_priority = final_priority
         ticket.__escalated = record.get("escalated") is True
         ticket.__requires_manual_review = record.get("requires_manual_review") is True
+        ticket.__overdue = record.get("overdue") is True
+        ticket.refresh_overdue_status()
         ticket.__updated_at = cls.__text(record.get("updated_at")) or created_at
         ticket.__history = []
         history = record.get("history")
