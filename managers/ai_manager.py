@@ -7,6 +7,7 @@ from google.genai import types
 from managers.logic_manager import LogicManager
 
 logger = logging.getLogger(__name__)
+logging.getLogger("google.genai").setLevel(logging.ERROR)
 
 
 class PromptBuilder:
