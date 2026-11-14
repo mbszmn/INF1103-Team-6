@@ -64,3 +64,15 @@ def test_list_marks_open_critical_tickets_as_top_of_the_queue(make_ticket):
 def test_empty_list_shows_the_message():
     assert "No tickets yet." in TicketFormatter().format_list([], "All Tickets")
     assert "No tickets match." in TicketFormatter().format_list([], "Filter", "No tickets match.")
+
+
+def test_only_tickets_open_for_more_than_a_day_get_the_overdue_badge(make_ticket):
+    fresh = make_ticket("0001")
+    old = make_ticket("0002", created_at="2026-01-01T09:00:00")
+    old.refresh_overdue_status()
+    formatter = TicketFormatter()
+    text = formatter.format_list([fresh, old], "All Tickets")
+    assert "ID: 0001 | WiFi problem | Priority: Medium | Status: Open\n" in text
+    assert "ID: 0002 | WiFi problem | Priority: Medium | Status: Open | [OVERDUE >24H]" in text
+    assert "SLA Status" not in formatter.format_detail(fresh)
+    assert "SLA Status: OVERDUE (>24h unresolved)" in formatter.format_detail(old)
