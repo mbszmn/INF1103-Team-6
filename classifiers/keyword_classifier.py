@@ -73,7 +73,7 @@ class KeywordClassifier(TicketClassifier):
         ]).lower()
 
         for category, keywords in self.KEYWORDS.items():
-            if self.has_keyword(text, keywords):
+            if any(keyword in text for keyword in keywords):
                 return category
 
         return "Other"
