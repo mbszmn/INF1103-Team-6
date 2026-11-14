@@ -12,9 +12,9 @@ class KeywordClassifier(TicketClassifier):
             "data breach", "spam", "malicious link",
             "compromised account", "suspicious link",
             "click sus link", "unexpected attachment",
-            "hack",
+            "hack", "scam", "fraud"
         ],
-        
+
         "Network": [
             "wifi", "wi-fi", "internet", "network",
             "connection", "disconnected", "connectivity",
@@ -49,13 +49,25 @@ class KeywordClassifier(TicketClassifier):
             "microsoft office", "word", "excel",
             "powerpoint", "browser",
             "failed to install",
+
         ]
     }
 
+    def has_keyword(self, text: str, keywords: list[str]) -> bool:
+        """Check whether the text contains any of the given keywords."""
+
+        for keyword in keywords:
+            if keyword in text:
+                return True
+
+        return False
+
     def classify(self, ticket: dict) -> str:
+        """Classify a ticket using keywords in the ticket details."""
+
         text: str = " ".join([
             str(ticket.get("title") or ""),
-            str(ticket.get("description") or""),
+            str(ticket.get("description") or ""),
             str(ticket.get("device") or ""),
             str(ticket.get("error_message") or ""),
         ]).lower()
