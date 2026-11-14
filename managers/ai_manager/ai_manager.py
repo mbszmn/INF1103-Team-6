@@ -68,4 +68,5 @@ class AIManager:
             "security_related": category == "Security",
             "requires_escalation": category == "Security",
             "troubleshooting": fallback_steps,
+            "ai_failed": True,
         }

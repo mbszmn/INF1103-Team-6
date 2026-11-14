@@ -27,10 +27,13 @@ class TestMainIO(unittest.TestCase):
         self.ai = Mock()
         self.ai.analyse_ticket.return_value = {
             # Match the current AI response schema expected by LogicManager.
-            "extracted_hardware": ["WiFi adapter"],
-            "extracted_software": [],
-            "sentiment_score": 7,
+            "category": "Network",
+            "priority": "High",
+            "confidence": 0.90,
+            "security_related": False,
+            "requires_escalation": False,
             "summary": "Cannot connect to campus WiFi",
+            "affected_system": "WiFi adapter",
             "troubleshooting": ["Check the WiFi adapter", "Reconnect to campus WiFi"],
         }
 
