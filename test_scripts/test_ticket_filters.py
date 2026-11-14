@@ -3,6 +3,7 @@ import pytest
 from filters.all_of_filter import AllOfFilter
 from filters.field_filter import FieldFilter
 from filters.keyword_filter import KeywordFilter
+from filters.overdue_filter import OverdueFilter
 from filters.ticket_filter import TicketFilter
 from filters.ticket_filter_factory import TicketFilterFactory
 from models.ticket import Ticket
@@ -64,11 +65,12 @@ def test_empty_all_of_filter_matches_everything(tickets):
         KeywordFilter("wifi"),
         AllOfFilter([FieldFilter("status", "Open"), KeywordFilter("link")]),
         AllOfFilter([]),
+        OverdueFilter(),
     ],
-    ids=["status", "priority", "category", "keyword", "all-of", "empty all-of"],
+    ids=["status", "priority", "category", "keyword", "all-of", "empty all-of", "overdue"],
 )
 def test_every_filter_keeps_the_same_promise(ticket_filter, tickets):
-    # LSP: any TicketFilter can be used in place of another, the caller never checks the type
+    # LSP: any TicketFilter can replace another, so the calling code never has to check which filter it has
     assert isinstance(ticket_filter, TicketFilter)
     for ticket in tickets:
         assert isinstance(ticket_filter.matches(ticket), bool)
