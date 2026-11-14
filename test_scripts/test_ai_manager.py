@@ -9,7 +9,7 @@ from managers.ai_manager.prompt_builder import PromptBuilder
 
 
 class FailingAIProvider(BaseAIProvider):
-    #Stub AI provider used to simulate offline state, API errors, or malformed JSON
+    """Stub AI provider used to simulate offline state, API errors, or malformed JSON."""
 
     def __init__(
         self,
@@ -65,6 +65,8 @@ def _valid_part1_payload() -> dict:
 
 
 # --- 1. PromptBuilder Tests ---
+
+
 def test_prompt_builder_includes_context_and_guardrail_without_bias_fields():
     builder = PromptBuilder()
     prompt = builder.build_triage_prompt(_sample_ticket())
@@ -78,7 +80,9 @@ def test_prompt_builder_includes_context_and_guardrail_without_bias_fields():
     assert "2600001" not in prompt
 
 
-# --- 2. AIResponseValidator Tests---
+# --- 2. AIResponseValidator Tests (8 Part 1 Keys) ---
+
+
 def test_validator_accepts_complete_part1_schema():
     validator = AIResponseValidator()
     assert validator.validate_schema(_valid_part1_payload()) is True
@@ -111,6 +115,8 @@ def test_validator_rejects_non_dict_input():
 
 
 # --- 3. Provider & Polymorphism Tests ---
+
+
 def test_gemini_provider_handles_missing_api_key_gracefully(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     provider = GeminiProvider(model_name="gemini-3.5-flash-lite")
@@ -139,6 +145,8 @@ def test_ai_manager_uses_mock_provider_polymorphically():
 
 
 # --- 4. Retry & Offline Fallback Tests ---
+
+
 def test_base_provider_retries_on_malformed_json_then_succeeds():
     validator = AIResponseValidator()
     valid_json = (
