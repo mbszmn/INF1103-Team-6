@@ -65,17 +65,32 @@ class IOManager:
         print("5. Reopen Ticket")
         print("6. Export Tickets to CSV")
         print("7. Exit")
+        print("8. Filter / Search Tickets")
         print("----------------------------")
         return input("Enter option: ").strip()
 
     def get_ticket_id(self, prompt="Enter ticket ID: "):
         return input(prompt).strip()
 
-    def display_submission_result(self, ticket: dict[str, str]) -> None:
-        analysis = ticket["ai_analysis"]
-        print(f"\nTicket {ticket['ticket_id']} successfully processed and saved!")
-        print(f"Category: {analysis['category']} | Priority: {ticket['final_priority']}")
-        steps = analysis.get("troubleshooting", [])
+    def collect_filter_criteria(self) -> dict[str, str]:
+        # a blank answer means "any", only the filled in ones are used to filter
+        print("\nPress Enter to skip a question.")
+        return {
+            "status": input("Status (Open / Closed / Reopened): ").strip(),
+            "priority": input("Priority (Low / Medium / High / Critical): ").strip(),
+            "category": input(
+                "Category (Network / Hardware / Software / Account / Security / Other): "
+            ).strip(),
+            "keyword": input("Word to search for: ").strip(),
+        }
+
+    def display_submission_result(self, ticket: dict[str, object]) -> None:
+        analysis = ticket.get("ai_analysis")
+        if not isinstance(analysis, dict):
+            analysis = {}
+        print(f"\nTicket {ticket.get('ticket_id', '?')} successfully processed and saved!")
+        print(f"Category: {analysis.get('category', 'Unassigned')} | Priority: {ticket.get('final_priority', 'Medium')}")
+        steps = analysis.get("troubleshooting") or []
         if steps:
             print("\nSuggested Immediate Troubleshooting Steps:")
             for number, step in enumerate(steps, 1):
