@@ -141,7 +141,7 @@ class LogicManager:
                 "Our AI service is temporarily unavailable. "
                 "Your ticket has been flagged for manual review by "
                 "the IT support team. In the meantime, you can try "
-                "the general troubleshooting steps provided below. "
+                "the general troubleshooting steps provided above. "
                 "These suggestions may not resolve every issue. "
                 "If the problem persists, please wait for IT "
                 "support to review your ticket."
@@ -177,7 +177,7 @@ class LogicManager:
 
         if "ai_failed" in result.keys():
             ai_failed = result["ai_failed"]
-            
+
         confidence = result["confidence"]
 
         if ai_failed or confidence < 0.70:
