@@ -20,20 +20,23 @@ settings.register_profile("dev", max_examples=50)
 settings.load_profile("ci" if os.environ.get("CI") else "dev")
 
 GOOD_AI_REPLY = {
-    "extracted_hardware": ["WiFi adapter"],
-    "extracted_software": [],
-    "sentiment_score": 7,
+    "category": "Network",
+    "priority": "High",
+    "confidence": 0.90,
+    "security_related": False,
+    "requires_escalation": False,
     "summary": "Cannot connect to campus WiFi",
+    "affected_system": "WiFi adapter",
     "troubleshooting": ["Check the WiFi adapter", "Reconnect to campus WiFi"],
 }
 
 OFFLINE_AI_REPLY = {
     "ai_failed": True,
-    "extracted_hardware": [],
-    "extracted_software": [],
-    "sentiment_score": 5,
+    "category": "",
+    "priority": "",
+    "confidence": 0,
     "summary": "AI was not available",
-    "troubleshooting": ["Please wait for IT support."],
+    "troubleshooting": ["Please wait for IT support."], 
 }
 
 TICKET_ANSWERS = [
