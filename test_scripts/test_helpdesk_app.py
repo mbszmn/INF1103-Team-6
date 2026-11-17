@@ -28,7 +28,7 @@ def saved_tickets(folder: Path) -> list[dict]:
 
 
 def test_new_ticket_goes_through_all_four_managers_and_is_saved(app, fake_ai, tmp_path, ticket_answers, capsys):
-    output = run_app(app, ["1", *ticket_answers, "7"], capsys)
+    output = run_app(app, ["1", *ticket_answers, "8"], capsys)
 
     assert fake_ai.calls == [{
         "title": "WiFi problem",
@@ -52,7 +52,7 @@ def test_with_no_ai_the_ticket_is_still_saved_with_general_steps(
     app, fake_ai, offline_reply, tmp_path, ticket_answers, capsys
 ):
     fake_ai.reply = offline_reply
-    output = run_app(app, ["1", *ticket_answers, "7"], capsys)
+    output = run_app(app, ["1", *ticket_answers, "8"], capsys)
 
     [ticket] = saved_tickets(tmp_path)
     assert ticket["requires_manual_review"] is True
@@ -65,7 +65,7 @@ def test_security_ticket_is_escalated(app, fake_ai, tmp_path, ticket_answers, ca
     # the AI decides the category now, so the fake AI says this one is a security problem
     fake_ai.reply.update({"category": "Security", "security_related": True, "requires_escalation": True})
     ticket_answers[3] = "Clicked a phishing link"
-    output = run_app(app, ["1", *ticket_answers, "7"], capsys)
+    output = run_app(app, ["1", *ticket_answers, "8"], capsys)
 
     [ticket] = saved_tickets(tmp_path)
     assert ticket["escalated"] is True
@@ -78,7 +78,7 @@ def test_with_no_ai_a_phishing_ticket_is_still_escalated_by_the_keywords(
 ):
     fake_ai.reply = offline_reply
     ticket_answers[3] = "Clicked a phishing link"
-    output = run_app(app, ["1", *ticket_answers, "7"], capsys)
+    output = run_app(app, ["1", *ticket_answers, "8"], capsys)
 
     [ticket] = saved_tickets(tmp_path)
     assert ticket["escalated"] is True
@@ -89,7 +89,7 @@ def test_with_no_ai_a_phishing_ticket_is_still_escalated_by_the_keywords(
 
 def test_ai_reply_that_fails_the_checks_is_not_saved(app, fake_ai, tmp_path, ticket_answers, capsys):
     fake_ai.reply = {"summary": "the other fields are missing"}
-    output = run_app(app, ["1", *ticket_answers, "7"], capsys)
+    output = run_app(app, ["1", *ticket_answers, "8"], capsys)
 
     assert "ERROR: AI response failed validation rules." in output
     assert not (tmp_path / "tickets.json").exists()
@@ -107,7 +107,7 @@ def test_failed_save_is_reported_and_nothing_is_kept(app, ticket_answers, capsys
         raise StorageError("Could not save tickets.")
 
     monkeypatch.setattr("storage.json_ticket_repository.JsonTicketRepository.save_all", disk_full)
-    output = run_app(app, ["1", *ticket_answers, "2", "7"], capsys)
+    output = run_app(app, ["1", *ticket_answers, "2", "8"], capsys)
 
     assert "Ticket was not saved. Could not save tickets." in output
     assert "successfully processed" not in output
@@ -116,18 +116,18 @@ def test_failed_save_is_reported_and_nothing_is_kept(app, ticket_answers, capsys
 
 def test_every_menu_option_works_together(app, tmp_path, ticket_answers, capsys):
     answers = [
-        "1", *ticket_answers,
-        "2",
-        "3", "1",
-        "3", "9999",
-        "4", "1",
-        "4", "1",
-        "5", "1",
-        "6",
-        "8", "", "high", "", "wifi",
-        "9",
-        "7",
-    ]
+         "1", *ticket_answers,
+         "2",
+         "3", "1",
+         "3", "9999",
+         "4", "1",
+         "4", "1",
+         "5", "1",
+         "6",
+         "7", "", "high", "", "wifi",
+         "9",
+         "8",
+     ]
     output = run_app(app, answers, capsys)
 
     for expected in [
@@ -153,13 +153,13 @@ def test_every_menu_option_works_together(app, tmp_path, ticket_answers, capsys)
 
 
 def test_filter_with_a_bad_answer_says_what_is_allowed(app, capsys):
-    output = run_app(app, ["8", "opn", "", "", "", "7"], capsys)
+    output = run_app(app, ["7", "opn", "", "", "", "8"], capsys)
     assert "ERROR: Status must be one of: Open, Closed, Reopened." in output
 
 
 def test_damaged_ticket_file_is_backed_up_and_the_app_still_starts(app, tmp_path, capsys):
     (tmp_path / "tickets.json").write_text("{broken", encoding="utf-8")
-    output = run_app(app, ["7"], capsys)
+    output = run_app(app, ["8"], capsys)
     assert "0 ticket(s) loaded." in output
     assert (tmp_path / "tickets.json.bak").read_text(encoding="utf-8") == "{broken"
 
@@ -185,7 +185,7 @@ def test_unexpected_bug_is_logged_and_the_app_keeps_running(app, ticket_answers,
         raise RuntimeError("bug inside the logic manager")
 
     monkeypatch.setattr(LogicManager, "process_ticket", broken)
-    output = run_app(app, ["1", *ticket_answers, "2", "7"], capsys)
+    output = run_app(app, ["1", *ticket_answers, "2", "8"], capsys)
 
     assert "Sorry, something went wrong with that option." in output
     assert "All Tickets" in output
@@ -208,7 +208,7 @@ def test_bad_priority_is_reported_before_the_ai_is_asked(app, fake_ai, ticket_an
 
 
 def test_close_and_reopen_of_a_missing_ticket_say_so(app, capsys):
-    output = run_app(app, ["5", "42", "4", "42", "7"], capsys)
+    output = run_app(app, ["5", "42", "4", "42", "8"], capsys)
     assert output.count("Ticket 0042 not found.") == 2
 
 
@@ -217,7 +217,7 @@ def test_one_export_failing_does_not_stop_the_other(app, capsys, monkeypatch):
         raise StorageError("Could not write tickets.csv, close it if it is open in another program.")
 
     monkeypatch.setattr(CsvTicketExporter, "export", locked)
-    output = run_app(app, ["6", "7"], capsys)
+    output = run_app(app, ["6", "8"], capsys)
     assert "Could not write tickets.csv" in output
     assert "Summary report saved to" in output
 
@@ -232,7 +232,7 @@ def run_main(working_folder: Path, data_folder: Path) -> subprocess.CompletedPro
     )
     return subprocess.run(
         [sys.executable, str(PROJECT_ROOT / "main.py")],
-        input="7\n",
+        input="8\n",
         capture_output=True,
         text=True,
         encoding="utf-8",

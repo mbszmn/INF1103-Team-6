@@ -91,7 +91,7 @@ class TestMainIO(unittest.TestCase):
 
     def test_all_menu_routes_with_temporary_files(self):
         answers = ["1"] + self.answers + [
-            "2", "3", "0001", "3", "9999", "4", "0001", "5", "0001", "6", "7",
+            "2", "3", "0001", "3", "9999", "4", "0001", "5", "0001", "6", "8",
         ]
         with patch("builtins.input", side_effect=answers), patch("sys.stdout", new_callable=io.StringIO) as output:
             self.app.run()
@@ -109,7 +109,7 @@ class TestMainIO(unittest.TestCase):
         self.ai.analyse_ticket.assert_called_once()
 
     def test_invalid_menu_option_then_exit(self):
-        with patch("builtins.input", side_effect=["wrong", "7"]), patch("sys.stdout", new_callable=io.StringIO) as output:
+        with patch("builtins.input", side_effect=["wrong", "8"]), patch("sys.stdout", new_callable=io.StringIO) as output:
             self.app.run()
         self.assertIn("Invalid option", output.getvalue())
         self.ai.analyse_ticket.assert_not_called()
