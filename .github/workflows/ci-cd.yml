@@ -210,7 +210,7 @@ jobs:
         run: |
           image="${{ needs.publish.outputs.image }}@${{ needs.publish.outputs.digest }}"
           docker pull "$image"
-          answers='1\nAlex\n2600001\nDell Latitude 5430\nWiFi problem\nCannot connect to the school WiFi\n\n\nHigh\n7\n'
+          answers='1\nAlex\n2600001\nDell Latitude 5430\nWiFi problem\nCannot connect to the school WiFi\n\n\nHigh\n8\n'
           output=$(printf "$answers" | docker run -i --rm "$image" 2>&1)
           echo "$output"
           echo "$output" | grep -q "AI SIT HELPDESK TICKET TRIAGE SYSTEM"
