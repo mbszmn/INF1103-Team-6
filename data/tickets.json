@@ -25,12 +25,15 @@
         "status": "Reopened",
         "escalated": false,
         "requires_manual_review": true,
+        "overdue": true,
         "created_at": "2026-10-02T03:11:52",
-        "updated_at": "2026-10-10T00:11:16"
+        "updated_at": "2026-10-10T00:11:16",
+        "history": []
     },
     {
         "ticket_id": "0002",
         "username": "Chian",
+        "student_id": "",
         "device": "Macbook",
         "title": "network issue",
         "description": "unable to connect to school wifi",
@@ -53,12 +56,15 @@
         "status": "Open",
         "escalated": false,
         "requires_manual_review": true,
+        "overdue": true,
         "created_at": "2026-10-09T13:21:35",
-        "updated_at": "2026-10-09T13:21:35"
+        "updated_at": "2026-10-09T13:21:35",
+        "history": []
     },
     {
         "ticket_id": "0003",
         "username": "tan",
+        "student_id": "",
         "device": "windows",
         "title": "black screen",
         "description": "screen turns black upon startup",
@@ -83,12 +89,15 @@
         "status": "Open",
         "escalated": false,
         "requires_manual_review": false,
+        "overdue": true,
         "created_at": "2026-10-09T13:40:01",
-        "updated_at": "2026-10-09T13:40:01"
+        "updated_at": "2026-10-09T13:40:01",
+        "history": []
     },
     {
         "ticket_id": "0004",
         "username": "pl",
+        "student_id": "",
         "device": "windows",
         "title": "network",
         "description": "unable to connect to school wifi",
@@ -111,12 +120,15 @@
         "status": "Open",
         "escalated": false,
         "requires_manual_review": true,
+        "overdue": true,
         "created_at": "2026-10-09T13:45:17",
-        "updated_at": "2026-10-09T13:45:17"
+        "updated_at": "2026-10-09T13:45:17",
+        "history": []
     },
     {
         "ticket_id": "0005",
         "username": "lara",
+        "student_id": "",
         "device": "windows",
         "title": "network",
         "description": "unable to connect to internet",
@@ -139,12 +151,15 @@
         "status": "Open",
         "escalated": false,
         "requires_manual_review": true,
+        "overdue": true,
         "created_at": "2026-10-09T13:46:55",
-        "updated_at": "2026-10-09T13:46:55"
+        "updated_at": "2026-10-09T13:46:55",
+        "history": []
     },
     {
         "ticket_id": "0006",
         "username": "lara",
+        "student_id": "",
         "device": "macbook",
         "title": "network",
         "description": "unable to connect to school wifi",
@@ -169,12 +184,15 @@
         "status": "Open",
         "escalated": false,
         "requires_manual_review": false,
+        "overdue": true,
         "created_at": "2026-10-09T13:48:29",
-        "updated_at": "2026-10-09T13:48:29"
+        "updated_at": "2026-10-09T13:48:29",
+        "history": []
     },
     {
         "ticket_id": "0007",
         "username": "lara",
+        "student_id": "",
         "device": "macbook",
         "title": "network issue",
         "description": "unable to connect to school wifi",
@@ -199,8 +217,10 @@
         "status": "Open",
         "escalated": false,
         "requires_manual_review": false,
+        "overdue": true,
         "created_at": "2026-10-09T13:59:39",
-        "updated_at": "2026-10-09T13:59:39"
+        "updated_at": "2026-10-09T13:59:39",
+        "history": []
     },
     {
         "ticket_id": "0008",
@@ -232,8 +252,10 @@
         "status": "Open",
         "escalated": true,
         "requires_manual_review": false,
+        "overdue": true,
         "created_at": "2026-10-10T00:04:59",
-        "updated_at": "2026-10-10T00:04:59"
+        "updated_at": "2026-10-10T00:04:59",
+        "history": []
     },
     {
         "ticket_id": "0020",
@@ -265,8 +287,10 @@
         "status": "Open",
         "escalated": true,
         "requires_manual_review": false,
+        "overdue": true,
         "created_at": "2026-11-11T01:44:53",
-        "updated_at": "2026-11-11T01:44:53"
+        "updated_at": "2026-11-11T01:44:53",
+        "history": []
     },
     {
         "ticket_id": "0021",
@@ -304,7 +328,9 @@
         "status": "Open",
         "escalated": false,
         "requires_manual_review": false,
+        "overdue": true,
         "created_at": "2026-11-13T18:03:53",
-        "updated_at": "2026-11-13T18:03:53"
+        "updated_at": "2026-11-13T18:03:53",
+        "history": []
     }
 ]

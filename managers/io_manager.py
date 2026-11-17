@@ -64,8 +64,8 @@ class IOManager:
         print("4. Close Ticket")
         print("5. Reopen Ticket")
         print("6. Export Tickets to CSV")
-        print("7. Exit")
-        print("8. Filter / Search Tickets")
+        print("7. Filter / Search Tickets")
+        print("8. Exit")
         print("----------------------------")
         return input("Enter option: ").strip()
 

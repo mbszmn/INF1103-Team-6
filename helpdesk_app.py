@@ -49,7 +49,7 @@ class HelpdeskApp:
             "4": self.close_ticket,
             "5": self.reopen_ticket,
             "6": self.export_tickets,
-            "8": self.filter_tickets,
+            "7": self.filter_tickets,
         }
 
     def run(self) -> None:
