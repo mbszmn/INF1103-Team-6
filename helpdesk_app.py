@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class HelpdeskApp:
     # runs the menu and sends each new ticket through the IO, AI, logic and data managers in order
 
-    EXIT_OPTION = "7"
+    EXIT_OPTION = "8"
 
     def __init__(
         self,
