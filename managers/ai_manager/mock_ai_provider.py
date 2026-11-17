@@ -3,7 +3,7 @@ from managers.ai_manager.base_ai_provider import BaseAIProvider
 
 
 class MockAIProvider(BaseAIProvider):
-    """Offline mock AI provider for deterministic unit testing."""
+    # Offline mock AI provider for unit testing
 
     def __init__(self, canned_response: dict, model_name: str = "mock-ai-model"):
         super().__init__(model_name)
