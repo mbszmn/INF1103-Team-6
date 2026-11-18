@@ -1,4 +1,5 @@
 import json
+from datetime import UTC, datetime
 
 import pytest
 from hypothesis import given
@@ -149,12 +150,21 @@ def test_number_ticket_id_from_a_hand_edited_file_is_padded():
         {"ticket_id": "0001"},
         dict(PHASE_1_RECORD, status="Lost"),
         dict(PHASE_1_RECORD, user_priority="Urgent"),
+        dict(PHASE_1_RECORD, status="Closed", created_at="yesterday"),
     ],
-    ids=["list", "text", "missing keys", "unknown status", "unknown priority"],
+    ids=["list", "text", "missing keys", "unknown status", "unknown priority", "closed with a broken date"],
 )
 def test_damaged_records_are_refused(record):
     with pytest.raises(ValueError):
         Ticket.from_dict(record)
+
+
+def test_a_hand_edited_time_with_a_time_zone_loads_as_local_time():
+    # this used to crash the app at start up with "can't subtract offset-naive and offset-aware datetimes"
+    ticket = Ticket.from_dict(dict(PHASE_1_RECORD, created_at="2026-10-02T03:20:11+00:00"))
+    expected = datetime(2026, 10, 2, 3, 20, 11, tzinfo=UTC).astimezone().replace(tzinfo=None)
+    assert ticket.created_at == expected.isoformat(timespec="seconds")
+    assert ticket.is_overdue is True
 
 
 @given(username=st.text(), title=st.text(), description=st.text(), error=st.text())
