@@ -332,5 +332,48 @@
         "created_at": "2026-11-13T18:03:53",
         "updated_at": "2026-11-13T18:03:53",
         "history": []
+    },
+    {
+        "ticket_id": "0022",
+        "username": "Radcliffe",
+        "student_id": "2603211",
+        "device": "Lenovo",
+        "title": "Malware on my computer",
+        "description": "There is a a popup with malware on it",
+        "steps_attempted": "",
+        "user_priority": "High",
+        "error_message": "",
+        "ai_analysis": {
+            "category": "Security",
+            "priority": "Medium",
+            "confidence": 0.0,
+            "summary": "There is a a popup with malware on it",
+            "affected_system": "Lenovo",
+            "security_related": true,
+            "requires_escalation": true,
+            "requires_manual_review": true,
+            "troubleshooting": [
+                "Do not click suspicious links or open unknown attachments.",
+                "Do not reply to or interact with the suspicious message.",
+                "Report it to IT support through the official channel."
+            ],
+            "action": "ESCALATE",
+            "ai_failed": true,
+            "support_message": "Our AI service is temporarily unavailable. Your ticket has been flagged for manual review by the IT support team. In the meantime, you can try the general troubleshooting steps provided above. These suggestions may not resolve every issue. If the problem persists, please wait for IT support to review your ticket."
+        },
+        "final_priority": "Medium",
+        "status": "Open",
+        "escalated": true,
+        "requires_manual_review": true,
+        "overdue": false,
+        "created_at": "2026-11-18T12:20:08",
+        "updated_at": "2026-11-18T12:20:08",
+        "history": [
+            {
+                "old_status": "",
+                "new_status": "Open",
+                "changed_at": "2026-11-18T12:20:08"
+            }
+        ]
     }
 ]
