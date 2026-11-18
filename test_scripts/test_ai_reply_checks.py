@@ -77,7 +77,8 @@ class FakeClient:
 
 
 def gemini_with(monkeypatch, client):
-    monkeypatch.setattr(gemini_provider.genai, "Client", lambda: client)
+    # takes any arguments, so the tests still work if the client is later made with options like a timeout
+    monkeypatch.setattr(gemini_provider.genai, "Client", lambda *args, **kwargs: client)
     return GeminiProvider(model_name="gemini-test")
 
 
@@ -94,7 +95,7 @@ def test_gemini_asks_for_json_and_gives_back_the_text(monkeypatch):
 
 
 def test_gemini_without_a_client_raises_instead_of_sending(monkeypatch):
-    def no_key():
+    def no_key(*args, **kwargs):
         raise ValueError("Missing key inputs argument!")
 
     monkeypatch.setattr(gemini_provider.genai, "Client", no_key)
