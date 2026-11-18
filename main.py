@@ -15,6 +15,7 @@ from managers.io_manager import IOManager
 from managers.logic_manager import LogicManager
 from storage.json_ticket_repository import JsonTicketRepository
 
+
 # main.py only builds the objects and hands them to the app, all the rules live in the classes
 if __name__ == "__main__":
     # a strange character in a ticket should print as "?" instead of crashing the app

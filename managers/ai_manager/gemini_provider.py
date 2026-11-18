@@ -18,7 +18,7 @@ class GeminiProvider(BaseAIProvider):
         try:
             return genai.Client()
         except Exception as e:
-            logger.warning("Could not initialize Gemini client (Missing API Key): %s", e)
+            logger.warning("Could not initialize Gemini client: GEMINI_API_KEY is missing.")
             return None
 
     def is_available(self) -> bool:
