@@ -73,6 +73,19 @@ def test_security_ticket_is_escalated(app, fake_ai, tmp_path, ticket_answers, ca
     assert "escalated to the IT security team" in output
 
 
+def test_escalation_that_is_not_about_security_does_not_go_to_the_security_team(
+    app, fake_ai, tmp_path, ticket_answers, capsys
+):
+    fake_ai.reply.update({"category": "Hardware", "security_related": False, "requires_escalation": True})
+    ticket_answers[3] = "Smoke is coming out of my laptop"
+    output = run_app(app, ["1", *ticket_answers, "8"], capsys)
+
+    [ticket] = saved_tickets(tmp_path)
+    assert ticket["escalated"] is True
+    assert "escalated to a senior IT specialist" in output
+    assert "IT security team" not in output
+
+
 def test_with_no_ai_a_phishing_ticket_is_still_escalated_by_the_keywords(
     app, fake_ai, offline_reply, tmp_path, ticket_answers, capsys
 ):
