@@ -7,21 +7,23 @@ from managers.logic_manager import LogicManager
 
 logger = logging.getLogger(__name__)
 
-class AIManager:
-    # Coordinates prompt building, AI provider calls, validation, and keyword fallback
 
+class AIManager:
+    # Connects the prompt builder, AI provider, validator, and fallback rules
     def __init__(
         self,
         provider: BaseAIProvider | None = None,
         logic_manager: LogicManager | None = None,
         model_name: str = "gemini-3.5-flash-lite",
     ):
+        # Use Gemini by default unless a custom or mock provider is passed in
         self._provider = provider if provider is not None else GeminiProvider(model_name=model_name)
         self._logic_manager = logic_manager if logic_manager is not None else LogicManager()
         self._prompt_builder = PromptBuilder()
         self._validator = AIResponseValidator()
 
     def get_model_name(self) -> str:
+        # Return the name of the AI model currently being used
         return self._provider.get_model_name()
 
     def analyse_ticket(
@@ -32,6 +34,7 @@ class AIManager:
         error_message: str = "",
         steps_attempted: str = "",
     ) -> dict:
+        # Group all ticket inputs into one dictionary
         ticket_data = {
             "title": title,
             "description": description,
@@ -40,21 +43,25 @@ class AIManager:
             "steps_attempted": steps_attempted,
         }
 
+        # Skip the API call and use backup rules if the AI service is offline
         if not self._provider.is_available():
             logger.warning("AI provider is offline. Falling back to LogicManager rules.")
             return self._generate_fallback_dict(ticket_data)
 
+        # Build the prompt and ask the AI for a validated JSON response
         prompt = self._prompt_builder.build_triage_prompt(ticket_data)
         parsed_data = self._provider.generate_json(prompt, validator=self._validator)
 
+        # Return the AI result if it succeeded and passed the schema check
         if parsed_data is not None:
             return parsed_data
 
+        # Use backup keyword rules if the AI still failed after all retries
         logger.error("AI service unavailable after retries. Using fallback classification.")
         return self._generate_fallback_dict(ticket_data)
 
-    # to return a safe dictionary using LogicManager if AI fails
     def _generate_fallback_dict(self, ticket_data: dict) -> dict:
+        # Build a safe backup result using LogicManager rules when the AI fails
         category = self._logic_manager.classify_ticket(ticket_data)
         fallback_steps = self._logic_manager.get_fallback_troubleshooting(category)
         description = ticket_data.get("description", "")
