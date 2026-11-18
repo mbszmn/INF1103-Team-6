@@ -14,8 +14,9 @@ class TicketInputValidator:
         if field in self._REQUIRED_FIELDS and not value:
             return f"{field} cannot be empty."
 
-        if field == "student_id" and not (value.isdigit() or value.lower() == "staff"):
-            return "Student ID must be numbers only. Staff can type staff."
+        is_sit_id = value.isascii() and value.isdigit() and len(value) == 7
+        if field == "student_id" and not (is_sit_id or value.lower() == "staff"):
+            return "Student ID must be 7 digits. Staff can type staff."
 
         if field == "description" and len(value) < 10:
             return "Description is too short. Please provide at least 10 characters."

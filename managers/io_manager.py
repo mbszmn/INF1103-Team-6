@@ -21,7 +21,7 @@ class IOManager:
     def validate_ticket_input(self, data: dict[str, str]) -> list[str]:
         return self._validator.validate(data)
 
-    def collect_ticket_input(self):
+    def collect_ticket_input(self) -> dict[str, str]:
         data = {
             "username": self._read_validated_input("username", "Name / Username: "),
             "student_id": self._read_validated_input(
@@ -43,20 +43,17 @@ class IOManager:
             ),
         }
 
-        errors = self.validate_ticket_input(data)
-        if errors:
-            raise ValueError("\n".join(errors))
         return data
 
     def display_message(self, message: str) -> None:
         print(message)
 
-    def show_welcome(self):
+    def show_welcome(self) -> None:
         print("========================================")
         print("AI SIT HELPDESK TICKET TRIAGE SYSTEM")
         print("========================================\n")
 
-    def get_menu_option(self):
+    def get_menu_option(self) -> str:
         print("\n----------- MENU -----------")
         print("1. Submit New Ticket")
         print("2. View All Tickets")
@@ -69,7 +66,7 @@ class IOManager:
         print("----------------------------")
         return input("Enter option: ").strip()
 
-    def get_ticket_id(self, prompt="Enter ticket ID: "):
+    def get_ticket_id(self, prompt="Enter ticket ID: ") -> str:
         return input(prompt).strip()
 
     def collect_filter_criteria(self) -> dict[str, str]:

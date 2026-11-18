@@ -335,133 +335,95 @@
     },
     {
         "ticket_id": "0022",
-        "username": "paul",
-        "student_id": "238709",
-        "device": "dell",
-        "title": "phishing emails",
-        "description": "accidentally clicked a link",
+        "username": "Radcliffe",
+        "student_id": "2603211",
+        "device": "Lenovo",
+        "title": "Malware on my computer",
+        "description": "There is a a popup with malware on it",
         "steps_attempted": "",
-        "user_priority": "Medium",
+        "user_priority": "High",
         "error_message": "",
         "ai_analysis": {
             "category": "Security",
-            "priority": "Critical",
-            "confidence": 0.99,
-            "summary": "User accidentally clicked an unknown link in a potential phishing email on a Dell device.",
-            "affected_system": "Dell Windows Device",
+            "priority": "Medium",
+            "confidence": 0.0,
+            "summary": "There is a a popup with malware on it",
+            "affected_system": "Lenovo",
             "security_related": true,
             "requires_escalation": true,
+            "requires_manual_review": true,
             "troubleshooting": [
-                "Disconnect the Dell device from the network (Wi-Fi and Ethernet) immediately to prevent potential malware propagation or data exfiltration.",
-                "Perform an offline full system scan using Windows Defender or the installed enterprise antivirus software to detect malicious payloads.",
-                "Report the incident immediately to the SIT IT Security team and reset your SIT network account password from a secure, unaffected device."
+                "Do not click suspicious links or open unknown attachments.",
+                "Do not reply to or interact with the suspicious message.",
+                "Report it to IT support through the official channel."
             ],
             "action": "ESCALATE",
-            "requires_manual_review": false,
-            "queue_position": "TOP"
+            "ai_failed": true,
+            "support_message": "Our AI service is temporarily unavailable. Your ticket has been flagged for manual review by the IT support team. In the meantime, you can try the general troubleshooting steps provided above. These suggestions may not resolve every issue. If the problem persists, please wait for IT support to review your ticket."
         },
-        "final_priority": "Critical",
+        "final_priority": "Medium",
         "status": "Open",
         "escalated": true,
-        "requires_manual_review": false,
+        "requires_manual_review": true,
         "overdue": false,
-        "created_at": "2026-11-18T03:30:24",
-        "updated_at": "2026-11-18T03:30:26",
+        "created_at": "2026-11-18T12:20:08",
+        "updated_at": "2026-11-18T12:20:08",
         "history": [
             {
                 "old_status": "",
                 "new_status": "Open",
-                "changed_at": "2026-11-18T03:30:24"
+                "changed_at": "2026-11-18T12:20:08"
             }
         ]
     },
     {
         "ticket_id": "0023",
-        "username": "jas",
-        "student_id": "3536324",
-        "device": "ipad",
-        "title": "network",
-        "description": "connection to sit wifi failed",
+        "username": "Radcliffe",
+        "student_id": "staff",
+        "device": "Levono",
+        "title": "Virus on my Laptop",
+        "description": "There is a pop-up that will not go away",
         "steps_attempted": "",
-        "user_priority": "Low",
+        "user_priority": "Medium",
         "error_message": "",
         "ai_analysis": {
-            "category": "Network",
+            "category": "Security",
             "priority": "Medium",
-            "confidence": 0.95,
-            "summary": "User is unable to connect their iPad to the SIT campus Wi-Fi network.",
-            "affected_system": "iPad Wi-Fi Settings",
-            "security_related": false,
-            "requires_escalation": false,
+            "confidence": 0.85,
+            "summary": "User reports a persistent pop-up on a Lenovo laptop, potentially indicating adware or a browser hijacker.",
+            "affected_system": "Lenovo Laptop",
+            "security_related": true,
+            "requires_escalation": true,
             "troubleshooting": [
-                "Forget the SIT Wi-Fi network in iPad Settings > Wi-Fi, then toggle Wi-Fi off and back on before attempting to reconnect using your SIT credentials.",
-                "Verify that your iPad's iOS is up to date and that you are attempting to connect to the correct secure campus SSID (e.g., eduroam or SIT-Student).",
-                "Check network settings by going to Settings > General > Transfer or Reset iPad > Reset > Reset Network Settings, which will reconfigure all network configurations and saved passwords."
+                "Open the Lenovo Vantage application pre-installed on your Lenovo laptop to run a system health and security scan.",
+                "Check your default web browser settings (Chrome, Edge, or Firefox) to remove unauthorized extensions and clear cached site notifications that often cause persistent pop-ups.",
+                "Perform an offline virus scan using Windows Defender by searching for 'Windows Security' in the Start menu, selecting 'Virus & threat protection', and running a 'Microsoft Defender Offline scan'."
             ],
+            "action": "ESCALATE",
             "requires_manual_review": false
         },
         "final_priority": "Medium",
         "status": "Open",
-        "escalated": false,
+        "escalated": true,
         "requires_manual_review": false,
         "overdue": false,
-        "created_at": "2026-11-18T03:35:29",
-        "updated_at": "2026-11-18T03:35:31",
+        "created_at": "2026-11-18T21:04:47",
+        "updated_at": "2026-11-18T21:05:48",
         "history": [
             {
                 "old_status": "",
                 "new_status": "Open",
-                "changed_at": "2026-11-18T03:35:29"
+                "changed_at": "2026-11-18T21:04:47"
             }
         ]
     },
     {
         "ticket_id": "0024",
-        "username": "john",
-        "student_id": "274985",
-        "device": "macbook",
+        "username": "qwert",
+        "student_id": "2890574",
+        "device": "dell 3433",
         "title": "network",
-        "description": "cant connec to sch wifi",
-        "steps_attempted": "",
-        "user_priority": "Medium",
-        "error_message": "",
-        "ai_analysis": {
-            "category": "Network",
-            "priority": "Medium",
-            "confidence": 0.95,
-            "summary": "The user is unable to connect to the school Wi-Fi network using their MacBook.",
-            "affected_system": "macOS Wi-Fi network settings",
-            "security_related": false,
-            "requires_escalation": false,
-            "troubleshooting": [
-                "Verify that you are selecting the official campus Wi-Fi network (e.g., eduroam) and re-enter your SIT student or staff network credentials.",
-                "Go to System Settings > Wi-Fi, forget the campus Wi-Fi network profile, and then reconnect from scratch.",
-                "Open Network Settings, verify that Wi-Fi is enabled, and renew your DHCP lease via the Advanced network settings."
-            ],
-            "requires_manual_review": false
-        },
-        "final_priority": "Medium",
-        "status": "Open",
-        "escalated": false,
-        "requires_manual_review": false,
-        "overdue": false,
-        "created_at": "2026-11-18T21:07:16",
-        "updated_at": "2026-11-18T21:07:54",
-        "history": [
-            {
-                "old_status": "",
-                "new_status": "Open",
-                "changed_at": "2026-11-18T21:07:16"
-            }
-        ]
-    },
-    {
-        "ticket_id": "0025",
-        "username": "mary",
-        "student_id": "staff",
-        "device": "macbook pro",
-        "title": "network",
-        "description": "cant connect internet",
+        "description": "cant connect to wifi",
         "steps_attempted": "",
         "user_priority": "Low",
         "error_message": "",
@@ -469,14 +431,14 @@
             "category": "Network",
             "priority": "Medium",
             "confidence": 0.95,
-            "summary": "User is unable to connect to the internet on a MacBook Pro.",
-            "affected_system": "macOS Wi-Fi / Network Settings",
+            "summary": "The user on a Dell 3433 laptop is unable to connect to the wireless network.",
+            "affected_system": "Dell 3433 Wi-Fi Adapter",
             "security_related": false,
             "requires_escalation": false,
             "troubleshooting": [
-                "Verify Wi-Fi is enabled and check if other campus networks or personal hotspots can be joined to isolate the issue.",
-                "Go to System Settings > Network > Wi-Fi, click 'Details' on your current network, and select 'Forget This Network' before reconnecting with correct credentials.",
-                "Renew the DHCP lease by navigating to System Settings > Network > Wi-Fi > Details > TCP/IP and clicking 'Renew DHCP Lease'."
+                "Verify that the physical Wi-Fi switch or function key (typically Fn + PrtScn or F2/F12 on Dell laptops) is enabled and the airplane mode is turned off.",
+                "Open Device Manager on your Dell 3433, locate your wireless network adapter under 'Network adapters', right-click to update the driver or select 'Disable device' and then 'Enable device' to reset it.",
+                "Run the Windows Network Troubleshooter by going to Settings > System > Troubleshoot > Other troubleshooters and running the Network Adapter diagnostic tool."
             ],
             "requires_manual_review": false
         },
@@ -485,219 +447,13 @@
         "escalated": false,
         "requires_manual_review": false,
         "overdue": false,
-        "created_at": "2026-11-18T21:12:43",
-        "updated_at": "2026-11-18T21:12:49",
+        "created_at": "2026-11-18T22:37:28",
+        "updated_at": "2026-11-18T22:37:39",
         "history": [
             {
                 "old_status": "",
                 "new_status": "Open",
-                "changed_at": "2026-11-18T21:12:43"
-            }
-        ]
-    },
-    {
-        "ticket_id": "0026",
-        "username": "john",
-        "student_id": "1279847",
-        "device": "dell 5884",
-        "title": "network",
-        "description": "cant connect to any wifi\\",
-        "steps_attempted": "",
-        "user_priority": "Critical",
-        "error_message": "",
-        "ai_analysis": {
-            "category": "Network",
-            "priority": "Medium",
-            "confidence": 0.95,
-            "summary": "The user is unable to connect to any Wi-Fi network on their Dell 5884 device.",
-            "affected_system": "Dell 5884 Wireless Network Adapter",
-            "security_related": false,
-            "requires_escalation": false,
-            "troubleshooting": [
-                "Verify that the physical Wi-Fi switch or function key (e.g., Fn + PrtScn or designated antenna key) is enabled on the Dell 5884.",
-                "Open Device Manager, locate the wireless network adapter under Network Adapters, and select 'Update driver' or perform a hardware reset by disabling and re-enabling the device.",
-                "Open the Command Prompt as an administrator and run the network reset commands: 'netsh winsock reset' followed by 'ipconfig /renew'."
-            ],
-            "requires_manual_review": false
-        },
-        "final_priority": "Medium",
-        "status": "Open",
-        "escalated": false,
-        "requires_manual_review": false,
-        "overdue": false,
-        "created_at": "2026-11-18T21:37:47",
-        "updated_at": "2026-11-18T21:37:56",
-        "history": [
-            {
-                "old_status": "",
-                "new_status": "Open",
-                "changed_at": "2026-11-18T21:37:47"
-            }
-        ]
-    },
-    {
-        "ticket_id": "0027",
-        "username": "john",
-        "student_id": "238749",
-        "device": "dell latitude 34",
-        "title": "network",
-        "description": "cant connect to school wifi",
-        "steps_attempted": "",
-        "user_priority": "Low",
-        "error_message": "",
-        "ai_analysis": {
-            "category": "Network",
-            "priority": "Medium",
-            "confidence": 0.0,
-            "summary": "cant connect to school wifi",
-            "affected_system": "dell latitude 34",
-            "security_related": false,
-            "requires_escalation": false,
-            "requires_manual_review": true,
-            "troubleshooting": [
-                "Check whether Wi-Fi is enabled and Airplane Mode is off.",
-                "Try reconnecting to the network or restarting your device.",
-                "Check if other devices can connect to the internet."
-            ],
-            "action": "MANUAL_REVIEW",
-            "ai_failed": true,
-            "support_message": "Our AI service is temporarily unavailable. Your ticket has been flagged for manual review by the IT support team. In the meantime, you can try the general troubleshooting steps provided above. These suggestions may not resolve every issue. If the problem persists, please wait for IT support to review your ticket."
-        },
-        "final_priority": "Medium",
-        "status": "Open",
-        "escalated": false,
-        "requires_manual_review": true,
-        "overdue": false,
-        "created_at": "2026-11-18T21:40:47",
-        "updated_at": "2026-11-18T21:40:47",
-        "history": [
-            {
-                "old_status": "",
-                "new_status": "Open",
-                "changed_at": "2026-11-18T21:40:47"
-            }
-        ]
-    },
-    {
-        "ticket_id": "0028",
-        "username": "john",
-        "student_id": "234523",
-        "device": "dell 5435",
-        "title": "network",
-        "description": "cant connect to sch wifi",
-        "steps_attempted": "",
-        "user_priority": "Low",
-        "error_message": "",
-        "ai_analysis": {
-            "category": "Network",
-            "priority": "Medium",
-            "confidence": 0.0,
-            "summary": "cant connect to sch wifi",
-            "affected_system": "dell 5435",
-            "security_related": false,
-            "requires_escalation": false,
-            "requires_manual_review": true,
-            "troubleshooting": [
-                "Check whether Wi-Fi is enabled and Airplane Mode is off.",
-                "Try reconnecting to the network or restarting your device.",
-                "Check if other devices can connect to the internet."
-            ],
-            "action": "MANUAL_REVIEW",
-            "ai_failed": true,
-            "support_message": "Our AI service is temporarily unavailable. Your ticket has been flagged for manual review by the IT support team. In the meantime, you can try the general troubleshooting steps provided above. These suggestions may not resolve every issue. If the problem persists, please wait for IT support to review your ticket."
-        },
-        "final_priority": "Medium",
-        "status": "Open",
-        "escalated": false,
-        "requires_manual_review": true,
-        "overdue": false,
-        "created_at": "2026-11-18T21:48:16",
-        "updated_at": "2026-11-18T21:48:20",
-        "history": [
-            {
-                "old_status": "",
-                "new_status": "Open",
-                "changed_at": "2026-11-18T21:48:16"
-            }
-        ]
-    },
-    {
-        "ticket_id": "0029",
-        "username": "mary",
-        "student_id": "234989",
-        "device": "black screen",
-        "title": "black screen",
-        "description": "cant see anything",
-        "steps_attempted": "",
-        "user_priority": "Critical",
-        "error_message": "",
-        "ai_analysis": {
-            "category": "Hardware",
-            "priority": "High",
-            "confidence": 0.85,
-            "summary": "The user is experiencing a complete black screen issue with no visible display output.",
-            "affected_system": "Display / Monitor / GPU",
-            "security_related": false,
-            "requires_escalation": false,
-            "troubleshooting": [
-                "Verify all physical display cables (HDMI, DisplayPort, or power cables) are securely connected to both the monitor and the device.",
-                "Perform a hardware reset by holding down the device's power button for 10-15 seconds to force a complete shutdown, then turn it back on.",
-                "Test the display with an alternative monitor or cable, or connect to an external monitor to determine if the issue is with the primary screen or the graphics hardware."
-            ],
-            "requires_manual_review": false
-        },
-        "final_priority": "High",
-        "status": "Open",
-        "escalated": false,
-        "requires_manual_review": false,
-        "overdue": false,
-        "created_at": "2026-11-18T21:51:05",
-        "updated_at": "2026-11-18T21:51:13",
-        "history": [
-            {
-                "old_status": "",
-                "new_status": "Open",
-                "changed_at": "2026-11-18T21:51:05"
-            }
-        ]
-    },
-    {
-        "ticket_id": "0030",
-        "username": "mary",
-        "student_id": "238479",
-        "device": "dell 12332",
-        "title": "cant access xsite",
-        "description": "cannot login",
-        "steps_attempted": "",
-        "user_priority": "Critical",
-        "error_message": "",
-        "ai_analysis": {
-            "category": "Software",
-            "priority": "Medium",
-            "confidence": 0.85,
-            "summary": "The user is unable to log in to Xsite on their Dell laptop.",
-            "affected_system": "Xsite / Dell 12332",
-            "security_related": false,
-            "requires_escalation": false,
-            "troubleshooting": [
-                "Verify network connectivity by checking if the Dell laptop can access other campus web services and checking local Wi-Fi or Ethernet settings.",
-                "Clear browser cache and cookies or attempt to access Xsite via an Incognito/Private browsing window on the Dell laptop.",
-                "Confirm credentials by attempting to log in to the SIT central authentication portal separately to ensure the account is not locked."
-            ],
-            "requires_manual_review": false
-        },
-        "final_priority": "Medium",
-        "status": "Open",
-        "escalated": false,
-        "requires_manual_review": false,
-        "overdue": false,
-        "created_at": "2026-11-18T21:54:16",
-        "updated_at": "2026-11-18T21:54:29",
-        "history": [
-            {
-                "old_status": "",
-                "new_status": "Open",
-                "changed_at": "2026-11-18T21:54:16"
+                "changed_at": "2026-11-18T22:37:28"
             }
         ]
     }

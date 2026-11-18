@@ -17,7 +17,7 @@ class GeminiProvider(BaseAIProvider):
         # Create the Gemini client using the API key from the environment
         try:
             return genai.Client()
-        except Exception as e:
+        except Exception:
             logger.warning("Could not initialize Gemini client: GEMINI_API_KEY is missing.")
             return None
 
