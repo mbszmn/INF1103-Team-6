@@ -416,5 +416,45 @@
                 "changed_at": "2026-11-18T21:04:47"
             }
         ]
+    },
+    {
+        "ticket_id": "0024",
+        "username": "qwert",
+        "student_id": "2890574",
+        "device": "dell 3433",
+        "title": "network",
+        "description": "cant connect to wifi",
+        "steps_attempted": "",
+        "user_priority": "Low",
+        "error_message": "",
+        "ai_analysis": {
+            "category": "Network",
+            "priority": "Medium",
+            "confidence": 0.95,
+            "summary": "The user on a Dell 3433 laptop is unable to connect to the wireless network.",
+            "affected_system": "Dell 3433 Wi-Fi Adapter",
+            "security_related": false,
+            "requires_escalation": false,
+            "troubleshooting": [
+                "Verify that the physical Wi-Fi switch or function key (typically Fn + PrtScn or F2/F12 on Dell laptops) is enabled and the airplane mode is turned off.",
+                "Open Device Manager on your Dell 3433, locate your wireless network adapter under 'Network adapters', right-click to update the driver or select 'Disable device' and then 'Enable device' to reset it.",
+                "Run the Windows Network Troubleshooter by going to Settings > System > Troubleshoot > Other troubleshooters and running the Network Adapter diagnostic tool."
+            ],
+            "requires_manual_review": false
+        },
+        "final_priority": "Medium",
+        "status": "Open",
+        "escalated": false,
+        "requires_manual_review": false,
+        "overdue": false,
+        "created_at": "2026-11-18T22:37:28",
+        "updated_at": "2026-11-18T22:37:39",
+        "history": [
+            {
+                "old_status": "",
+                "new_status": "Open",
+                "changed_at": "2026-11-18T22:37:28"
+            }
+        ]
     }
 ]
