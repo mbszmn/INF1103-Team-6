@@ -36,4 +36,6 @@ class GeminiProvider(BaseAIProvider):
                 temperature=0.2,
             ),
         )
+        if not response.text:
+            raise ValueError("Gemini API returned an empty response.")
         return response.text
