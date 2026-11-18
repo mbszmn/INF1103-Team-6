@@ -43,9 +43,6 @@ class IOManager:
             ),
         }
 
-        errors = self.validate_ticket_input(data)
-        if errors:
-            raise ValueError("\n".join(errors))
         return data
 
     def display_message(self, message: str) -> None:

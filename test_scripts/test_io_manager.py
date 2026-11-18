@@ -169,5 +169,16 @@ class TestIOManager(unittest.TestCase):
             self.io.display_submission_result(ticket)
         self.assertNotIn("Suggested Immediate Troubleshooting", output.getvalue())
 
+    def test_ticket_without_ai_analysis_still_displays(self):
+        ticket = {"ticket_id": "0001", "final_priority": "Low"}
+        with patch("sys.stdout", new_callable=io.StringIO) as output:
+            self.io.display_submission_result(ticket)
+            self.assertIn("Category: Unassigned | Priority: Low", output.getvalue())
+
+    def test_reprompts_for_short_or_unusual_student_id(self):
+        answers = self.answers()
+        answers[1:1] = ["123", "²" * 7]
+        self.assertEqual(self.collect(answers), self.valid_data)
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
