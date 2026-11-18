@@ -206,7 +206,7 @@ class Ticket:
         status = cls.__text(record["status"])
         if status not in cls.STATUSES:
             raise ValueError(f"Unknown status {status!r}.")
-        created_at = cls.__text(record["created_at"])
+        created_at = cls.__local_time(cls.__text(record["created_at"]))
         ticket = cls(
             ticket_id=cls.normalise_id(cls.__text(record["ticket_id"])),
             username=cls.__text(record["username"]),
@@ -261,6 +261,20 @@ class Ticket:
         if value is None:
             return ""
         return str(value)
+
+    @staticmethod
+    def __local_time(text: str) -> str:
+        # the overdue check needs created_at to be a real date and time, so a closed ticket with a
+        # broken date is refused now instead of crashing later when someone reopens it
+        try:
+            moment = datetime.fromisoformat(text)
+        except ValueError as error:
+            raise ValueError(f"created_at {text!r} is not a date and time.") from error
+        if moment.tzinfo is None:
+            return text
+        # a hand edited time like 09:00:00+08:00 is changed to local time, because python cannot
+        # compare a time that has a time zone with datetime.now(), which has none
+        return moment.astimezone().replace(tzinfo=None).isoformat(timespec="seconds")
 
     @staticmethod
     def __now() -> str:

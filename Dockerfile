@@ -2,10 +2,12 @@
 
 # python and the app packages, shared by the two stages below
 FROM python:3.13-slim AS python-deps
+# TZ: containers run on UTC, so without it a ticket made at 7 pm in Singapore was saved as 11 am
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    TZ=Asia/Singapore
 WORKDIR /app
 COPY requirements.txt ./
 RUN pip install -r requirements.txt

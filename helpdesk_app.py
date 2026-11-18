@@ -120,8 +120,11 @@ class HelpdeskApp:
         support_message = result.get("support_message")
         if isinstance(support_message, str) and support_message != "":
             self.__io.display_message(f"\n{support_message}")
-        if ticket.escalated:
+        if ticket.escalated and ticket.ai_analysis.get("security_related") is True:
             self.__io.display_message("This ticket has been escalated to the IT security team.")
+        elif ticket.escalated:
+            # the AI can also ask for a specialist when it is not a security problem, like a smoking battery
+            self.__io.display_message("This ticket has been escalated to a senior IT specialist.")
         elif ticket.requires_manual_review:
             self.__io.display_message("This ticket will be checked by IT support staff.")
 

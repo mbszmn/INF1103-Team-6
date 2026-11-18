@@ -14,9 +14,11 @@ from managers.logic_manager import LogicManager
 from models.ticket import Ticket
 from storage.json_ticket_repository import JsonTicketRepository
 
-# CI gets the same random examples every run so a failure can be repeated
-settings.register_profile("ci", derandomize=True, max_examples=50)
-settings.register_profile("dev", max_examples=50)
+# CI gets the same random examples every run so a failure can be repeated. There is no time limit
+# for each example, because writing a file on a slow or busy computer can take longer than the
+# 200 ms default, and that made the CSV test fail once even though the code was fine
+settings.register_profile("ci", derandomize=True, max_examples=50, deadline=None)
+settings.register_profile("dev", max_examples=50, deadline=None)
 settings.load_profile("ci" if os.environ.get("CI") else "dev")
 
 GOOD_AI_REPLY = {

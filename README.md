@@ -78,6 +78,7 @@ docker run -it --rm --env-file .env -v helpdesk-data:/app/data ghcr.io/mbszmn/in
 | `GEMINI_API_KEY` | Gemini key for the AI manager | none, app runs in offline mode |
 | `HELPDESK_DATA_DIR` | Folder for `tickets.json`, the exports and `helpdesk.log` | `data` next to `main.py` |
 | `APP_VERSION` | Version shown when the app starts, set by the pipeline | `dev` |
+| `TZ` | Time zone for the ticket times inside Docker, containers use UTC without it | `Asia/Singapore` in the image |
 
 ## When something goes wrong
 
@@ -125,6 +126,6 @@ The image then gets the tags `latest`, `2.0.0`, `2.0` and the short commit id.
 | `test_scripts/` | all the automated tests |
 | `data/tickets.json` | saved tickets |
 
-Menu option 8 filters tickets by status, priority, category and a search word. Typing overdue as
-the status shows open tickets that are older than 24 hours. Option 6 writes
+Menu option 7 filters tickets by status, priority, category and a search word, and option 8
+exits. Typing overdue as the status shows open tickets that are older than 24 hours. Option 6 writes
 `data/tickets.csv` for Excel and `data/ticket_summary.txt` with counts and the urgent tickets.
