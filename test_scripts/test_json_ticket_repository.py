@@ -109,4 +109,8 @@ def test_team_ticket_file_loads_and_saves_without_losing_anything(tmp_path):
     assert len(saved) == len(original)
     for before, after in zip(original, saved, strict=True):
         for key, value in before.items():
+            if key == "overdue":
+                # worked out again from created_at on every load, so it turns True once a ticket is 24 hours old
+                assert isinstance(after[key], bool)
+                continue
             assert after[key] == value, f"ticket {before['ticket_id']} lost {key}"
